@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "lancamento")
@@ -68,4 +70,8 @@ public class Lancamento {
   public void setPagador(Pessoa pagador) {
     this.pagador = pagador;
   }
+
+  @OneToMany(mappedBy = "lancamento", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<LancamentoRateio> rateios = new ArrayList<>();
+
 }

@@ -10,7 +10,7 @@ import br.com.neia.divisaocontas.repository.LancamentoRepository;
 import br.com.neia.divisaocontas.repository.PessoaRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
@@ -36,8 +36,16 @@ public class LancamentoController {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public LancamentoResponse criar(@RequestBody LancamentoCreateRequest req) {
+    System.out.println(">>> POST /api/lancamentos chamado em: " + java.time.OffsetDateTime.now());
     Pessoa pagador = pessoaRepository.findById(req.getPagadorId())
         .orElseThrow(() -> new IllegalArgumentException("Pagador não encontrado"));
+
+    // Verificação de duplicidade
+    boolean existe = lancamentoRepository.existsByDescricaoAndDataAndValorAndPagador(
+        req.getDescricao(), req.getData(), req.getValor(), pagador);
+    if (existe) {
+      throw new IllegalArgumentException("Lançamento já existe.");
+    }
 
     Lancamento l = new Lancamento();
     l.setDescricao(req.getDescricao());
@@ -49,16 +57,20 @@ public class LancamentoController {
     Lancamento salvo = lancamentoRepository.save(l);
 
     List<Long> ids = req.getParticipantesIds();
-    if (ids == null || ids.size() < 2) {
-      throw new IllegalArgumentException("Informe pelo menos 2 participantes para dividir o lançamento.");
+    if (ids == null || ids.isEmpty()) {
+      throw new IllegalArgumentException("Informe pelo menos 1 participante para dividir o lançamento.");
     }
 
+    // Garante que o pagador está na lista de participantes
     if (!ids.contains(req.getPagadorId())) {
-      throw new IllegalArgumentException("O pagador deve estar na lista de participantes.");
+      ids.add(req.getPagadorId());
     }
 
-    List<Pessoa> participantes = pessoaRepository.findAllById(ids);
-    if (participantes.size() != ids.size()) {
+    // Remove duplicatas caso o pagador já esteja na lista
+    List<Long> idsUnicos = ids.stream().distinct().toList();
+
+    List<Pessoa> participantes = pessoaRepository.findAllById(idsUnicos);
+    if (participantes.size() != idsUnicos.size()) {
       throw new IllegalArgumentException("Um ou mais participantes não foram encontrados.");
     }
 
@@ -104,7 +116,6 @@ public class LancamentoController {
     if (!lancamentoRepository.existsById(id)) {
       throw new NotFoundException("Lançamento não encontrado.");
     }
-    rateioRepository.deleteByLancamentoId(id);
     lancamentoRepository.deleteById(id);
   }
 
