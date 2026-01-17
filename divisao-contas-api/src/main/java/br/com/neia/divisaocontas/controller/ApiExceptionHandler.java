@@ -8,12 +8,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.dao.DataIntegrityViolationException;
+import br.com.neia.divisaocontas.exception.DuplicateException;
 import br.com.neia.divisaocontas.exception.NotFoundException;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -21,9 +24,11 @@ import java.util.Map;
 @Hidden // Oculta do Swagger UI, mas pode ser removido se quiser exibir
 public class ApiExceptionHandler {
 
+  private static final DateTimeFormatter DATA_HORA_BR = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
   private ResponseEntity<Map<String, Object>> build(HttpStatus status, String mensagem, String path) {
     Map<String, Object> body = new LinkedHashMap<>();
-    body.put("dataHora", OffsetDateTime.now().toString());
+    body.put("dataHora", OffsetDateTime.now().format(DATA_HORA_BR));
     body.put("status", status.value());
     body.put("erro", status.getReasonPhrase());
     body.put("mensagem", mensagem);
@@ -50,6 +55,33 @@ public class ApiExceptionHandler {
   public ResponseEntity<Map<String, Object>> handleNotReadable(HttpMessageNotReadableException ex,
       jakarta.servlet.http.HttpServletRequest req) {
     return build(HttpStatus.BAD_REQUEST, "JSON inválido ou campos com formato incorreto.", req.getRequestURI());
+  }
+
+  // 409: duplicidade / conflito
+  @ExceptionHandler(DuplicateException.class)
+  public ResponseEntity<Map<String, Object>> handleDuplicate(DuplicateException ex,
+      jakarta.servlet.http.HttpServletRequest req) {
+    return build(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
+  }
+
+  // 409: violação de unicidade / integridade no banco
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  public ResponseEntity<Map<String, Object>> handleDataIntegrity(DataIntegrityViolationException ex,
+      jakarta.servlet.http.HttpServletRequest req) {
+    String path = req.getRequestURI();
+    String mensagem;
+
+    if (path != null && path.startsWith("/api/pessoas")) {
+      mensagem = "Já existe uma pessoa com esse nome.";
+    } else if (path != null && path.startsWith("/api/fechamentos")) {
+      mensagem = "Este mês já está fechado.";
+    } else if (path != null && path.startsWith("/api/lancamentos")) {
+      mensagem = "Lançamento já existe.";
+    } else {
+      mensagem = "Conflito de dados: registro já existe ou viola uma restrição.";
+    }
+
+    return build(HttpStatus.CONFLICT, mensagem, path);
   }
 
   // 500: erro inesperado (não expor detalhes)

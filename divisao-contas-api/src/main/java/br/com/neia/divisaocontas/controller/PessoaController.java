@@ -3,6 +3,8 @@ package br.com.neia.divisaocontas.controller;
 import br.com.neia.divisaocontas.dto.PessoaCreateRequest;
 import br.com.neia.divisaocontas.dto.PessoaResponse;
 import br.com.neia.divisaocontas.entity.Pessoa;
+import br.com.neia.divisaocontas.exception.DuplicateException;
+import br.com.neia.divisaocontas.exception.NotFoundException;
 import br.com.neia.divisaocontas.repository.LancamentoRateioRepository;
 import br.com.neia.divisaocontas.repository.LancamentoRepository;
 import br.com.neia.divisaocontas.repository.PagamentoRepository;
@@ -44,7 +46,7 @@ public class PessoaController {
     }
 
     if (pessoaRepository.existsByNomeIgnoreCase(nome)) {
-      throw new IllegalArgumentException("Já existe uma pessoa com esse nome.");
+      throw new DuplicateException("Já existe uma pessoa com esse nome.");
     }
 
     Pessoa salva = pessoaRepository.save(new Pessoa(nome));
@@ -59,14 +61,30 @@ public class PessoaController {
         .toList();
   }
 
+  @PutMapping("/{id}")
+  public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody PessoaCreateRequest req) {
+    Pessoa pessoa = pessoaRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Pessoa não encontrada."));
+
+    String nome = req.getNome() == null ? "" : req.getNome().trim();
+    if (nome.isEmpty()) {
+      throw new IllegalArgumentException("nome é obrigatório");
+    }
+
+    if (pessoaRepository.existsByNomeIgnoreCaseAndIdNot(nome, id)) {
+      throw new DuplicateException("Já existe uma pessoa com esse nome.");
+    }
+
+    pessoa.setNome(nome);
+    Pessoa salva = pessoaRepository.save(pessoa);
+    return ResponseEntity.ok(new PessoaResponse(salva.getId(), salva.getNome()));
+  }
+
   @DeleteMapping("/{id}")
   @Transactional
   public ResponseEntity<Map<String, String>> deletar(@PathVariable Long id) {
-
-    boolean existe = pessoaRepository.existsById(id);
-    if (!existe) {
-      return ResponseEntity.ok(Map.of("mensagem", "Pessoa informada não existe."));
-    }
+    pessoaRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Pessoa não encontrada."));
 
     boolean temPagamentos = pagamentoRepository.existsByPagadorId(id) || pagamentoRepository.existsByRecebedorId(id);
     boolean temLancamentos = lancamentoRepository.existsByPagadorId(id);
