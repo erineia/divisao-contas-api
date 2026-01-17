@@ -10,7 +10,9 @@ public class LancamentoCreateRequest {
   private LocalDate data;
   private BigDecimal valor;
   private Long pagadorId;
+  private boolean divide;
   private List<Long> participantesIds;
+  private List<DevedorItemRequest> devedores;
 
   public String getDescricao() {
     return descricao;
@@ -44,6 +46,14 @@ public class LancamentoCreateRequest {
     this.pagadorId = pagadorId;
   }
 
+  public boolean isDivide() {
+    return divide;
+  }
+
+  public void setDivide(boolean divide) {
+    this.divide = divide;
+  }
+
   public List<Long> getParticipantesIds() {
     return participantesIds;
   }
@@ -51,4 +61,13 @@ public class LancamentoCreateRequest {
   public void setParticipantesIds(List<Long> participantesIds) {
     this.participantesIds = participantesIds;
   }
+
+  public List<DevedorItemRequest> getDevedores() {
+    return devedores;
+  }
+
+  public void setDevedores(List<DevedorItemRequest> devedores) {
+    this.devedores = devedores;
+  }
+
 }

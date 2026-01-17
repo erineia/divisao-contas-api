@@ -12,4 +12,6 @@ public interface LancamentoRateioRepository extends JpaRepository<LancamentoRate
   @Transactional
   void deleteByLancamentoId(Long lancamentoId);
 
+  boolean existsByPessoaId(Long pessoaId);
+
 }

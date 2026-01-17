@@ -8,4 +8,9 @@ import java.util.List;
 
 public interface PagamentoRepository extends JpaRepository<Pagamento, Long> {
   List<Pagamento> findByDataBetween(LocalDate inicio, LocalDate fim);
+
+  boolean existsByPagadorId(Long pagadorId);
+
+  boolean existsByRecebedorId(Long recebedorId);
+
 }

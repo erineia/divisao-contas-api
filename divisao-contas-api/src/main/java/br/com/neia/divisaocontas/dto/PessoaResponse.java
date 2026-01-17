@@ -1,5 +1,8 @@
 package br.com.neia.divisaocontas.dto;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonPropertyOrder({ "id", "nome" })
 public class PessoaResponse {
   private Long id;
   private String nome;

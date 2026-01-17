@@ -1,6 +1,10 @@
 package br.com.neia.divisaocontas.controller;
 
+import br.com.neia.divisaocontas.repository.LancamentoRateioRepository;
+import br.com.neia.divisaocontas.repository.PagamentoRepository;
 import br.com.neia.divisaocontas.entity.Lancamento;
+import br.com.neia.divisaocontas.entity.LancamentoRateio;
+import br.com.neia.divisaocontas.entity.Pagamento;
 import br.com.neia.divisaocontas.repository.LancamentoRepository;
 import java.util.Comparator;
 import br.com.neia.divisaocontas.dto.SaldoPessoaResponse;
@@ -22,66 +26,139 @@ public class RelatorioController {
 
   private final SaldoController saldoController;
   private final LancamentoRepository lancamentoRepository;
+  private final LancamentoRateioRepository rateioRepository;
+  private final PagamentoRepository pagamentoRepository;
 
-  public RelatorioController(SaldoController saldoController, LancamentoRepository lancamentoRepository) {
+  public RelatorioController(SaldoController saldoController,
+      LancamentoRepository lancamentoRepository,
+      LancamentoRateioRepository rateioRepository,
+      PagamentoRepository pagamentoRepository) {
     this.saldoController = saldoController;
     this.lancamentoRepository = lancamentoRepository;
+    this.rateioRepository = rateioRepository;
+    this.pagamentoRepository = pagamentoRepository;
   }
 
-  @GetMapping(value = "/saldos.csv", produces = "text/csv")
-  public ResponseEntity<byte[]> saldosCsv(@RequestParam int ano, @RequestParam int mes) {
+  @GetMapping(value = "/mensal.csv", produces = "text/csv")
+  public ResponseEntity<byte[]> relatorioMensalCsv(@RequestParam int ano, @RequestParam int mes) {
 
-    // Formato do título: 01/2026
     String mesAno = String.format("%02d/%d", mes, ano);
 
-    // Período do mês
     LocalDate inicio = LocalDate.of(ano, mes, 1);
     LocalDate fim = inicio.plusMonths(1).minusDays(1);
 
-    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    DateTimeFormatter dataFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     // Lançamentos do mês
     List<Lancamento> lancamentosMes = lancamentoRepository.findAll()
         .stream()
         .filter(l -> !l.getData().isBefore(inicio) && !l.getData().isAfter(fim))
-        .sorted(Comparator.comparing(Lancamento::getData)
-            .thenComparing(Lancamento::getDescricao, String.CASE_INSENSITIVE_ORDER))
+        .sorted(Comparator.comparing(Lancamento::getData))
         .toList();
 
-    // Quem deve pra quem
-    List<TransferenciaResponse> quemDeve = saldoController.quemDeve(ano, mes);
+    // Pagamentos do mês
+    List<Pagamento> pagamentosMes = pagamentoRepository.findAll()
+        .stream()
+        .filter(p -> !p.getData().isBefore(inicio) && !p.getData().isAfter(fim))
+        .sorted(Comparator.comparing(Pagamento::getData))
+        .toList();
+
+    // Quem deve (mês): use período ISO
+    String iniIso = inicio.toString();
+    String fimIso = fim.toString();
+    List<TransferenciaResponse> quemDeveMes = saldoController.quemDevePeriodo(iniIso, fimIso);
+
+    // Quem deve (acumulado até o mês)
+    List<TransferenciaResponse> quemDeveAcumulado = saldoController.acumuladoAteMes(ano, mes);
+
+    // Totais
+    java.math.BigDecimal totalLancadoMes = lancamentosMes.stream()
+        .map(Lancamento::getValor)
+        .filter(v -> v != null)
+        .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+
+    java.math.BigDecimal totalPagoMes = pagamentosMes.stream()
+        .map(Pagamento::getValor)
+        .filter(v -> v != null)
+        .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
 
     StringBuilder csv = new StringBuilder();
 
-    // Cabeçalho
-    csv.append("Relatorio;").append(mesAno).append("\n\n");
+    // 1) Cabeçalho + Resumo
+    csv.append("Relatorio;").append(mesAno).append("\n");
+    csv.append("\n");
 
-    // 1) Seção: Lançamentos
-    csv.append("Lancamentos do mes\n");
-    csv.append("Descricao;Data;Valor;Pagador\n");
+    // 2) Lançamentos do mês
+    csv.append("Lancamentos");
+    csv.append("Descricao;Data;Valor;Pagador;Dividido com;Valor por pessoa;Obs\n");
 
     for (Lancamento l : lancamentosMes) {
+      List<LancamentoRateio> rateios = rateioRepository.findByLancamentoId(l.getId());
+
+      // Participantes (nomes únicos)
+      List<String> nomes = rateios.stream()
+          .map(r -> r.getPessoa().getNome())
+          .distinct()
+          .sorted(String.CASE_INSENSITIVE_ORDER)
+          .toList();
+
+      // “Dividido com”: mostrar todo mundo menos o pagador (fica mais natural)
+      String divididoCom = nomes.stream()
+          .filter(n -> l.getPagador() == null || !n.equalsIgnoreCase(l.getPagador().getNome()))
+          .reduce((a, b) -> a + ", " + b)
+          .orElse("");
+
+      // Valor por pessoa: se tiver rateio, pega do primeiro; senão calcula por qtd se
+      // tiver
+      java.math.BigDecimal valorPorPessoa = java.math.BigDecimal.ZERO;
+      if (!rateios.isEmpty() && rateios.get(0).getValorDevido() != null) {
+        valorPorPessoa = rateios.get(0).getValorDevido();
+      } else if (!nomes.isEmpty() && l.getValor() != null) {
+        valorPorPessoa = l.getValor().divide(java.math.BigDecimal.valueOf(nomes.size()), 2,
+            java.math.RoundingMode.HALF_UP);
+      }
+
       csv.append(escape(l.getDescricao())).append(";")
-          .append(l.getData().format(fmt)).append(";")
+          .append(l.getData() != null ? l.getData().format(dataFmt) : "").append(";")
           .append(toPtBr(l.getValor())).append(";")
-          .append(escape(l.getPagador().getNome()))
+          .append(escape(l.getPagador() != null ? l.getPagador().getNome() : "")).append(";")
+          .append(escape(divididoCom)).append(";")
+          .append(toPtBr(valorPorPessoa)).append(";")
+          .append("") // Obs: se você tiver observação no Lancamento, coloca aqui
           .append("\n");
     }
 
     csv.append("\n");
 
-    // 2) Seção: Quem deve pra quem
-    csv.append("Quem deve pra quem\n");
-    csv.append("Devedor;Credor;Valor\n");
+    // 3) Pagamentos do mês
+    csv.append("Pagamentos do mes (abatimentos)\n");
+    csv.append("Data;Valor;Pagador;Recebedor;Obs\n");
 
-    for (TransferenciaResponse t : quemDeve) {
+    for (Pagamento p : pagamentosMes) {
+      csv.append(p.getData() != null ? p.getData().format(dataFmt) : "").append(";")
+          .append(toPtBr(p.getValor())).append(";")
+          .append(escape(p.getPagador() != null ? p.getPagador().getNome() : "")).append(";")
+          .append(escape(p.getRecebedor() != null ? p.getRecebedor().getNome() : "")).append(";")
+          .append(escape(p.getObservacao()))
+          .append("\n");
+    }
+
+    csv.append("Total pagos no mes;").append(toPtBr(totalPagoMes)).append("\n");
+    csv.append("\n");
+
+    // 5) Quem deve (acumulado até o mês)
+    csv.append("Quem deve (acumulado)\n");
+    csv.append("Devedor;Credor;Valor\n");
+    for (TransferenciaResponse t : quemDeveAcumulado) {
       csv.append(escape(t.getDevedor())).append(";")
           .append(escape(t.getCredor())).append(";")
           .append(toPtBr(t.getValor()))
           .append("\n");
     }
 
-    String filename = String.format("saldos-%02d-%d.csv", mes, ano);
+    String filename = String.format("relatorio-%02d-%d.csv", mes, ano);
+    csv.append("\n");
+    csv.append("\n");
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")

@@ -8,11 +8,13 @@ import br.com.neia.divisaocontas.exception.NotFoundException;
 import br.com.neia.divisaocontas.repository.PagamentoRepository;
 import br.com.neia.divisaocontas.repository.PessoaRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pagamentos")
@@ -110,6 +112,17 @@ public class PagamentoController {
     }
 
     throw new IllegalArgumentException("Formato de data inválido. Use yyyy-MM-dd ou dd/MM/yyyy.");
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Map<String, String>> deletar(@PathVariable Long id) {
+    boolean existe = pagamentoRepository.existsById(id);
+    if (!existe) {
+      return ResponseEntity.ok(Map.of("mensagem", "Pagamento informado não existe."));
+    }
+
+    pagamentoRepository.deleteById(id);
+    return ResponseEntity.ok(Map.of("mensagem", "Pagamento excluído com sucesso!"));
   }
 
 }
