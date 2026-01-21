@@ -1,68 +1,65 @@
 package br.com.neia.divisaocontas.controller;
 
-import br.com.neia.divisaocontas.entity.FechamentoMes;
-import br.com.neia.divisaocontas.exception.DuplicateException;
-import br.com.neia.divisaocontas.exception.NotFoundException;
-import br.com.neia.divisaocontas.repository.FechamentoMesRepository;
+import br.com.neia.divisaocontas.dto.ErrorResponse;
+import br.com.neia.divisaocontas.dto.FechamentoMesResponse;
+import br.com.neia.divisaocontas.service.FechamentoMesService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/fechamentos")
+@Tag(name = "Fechamentos")
 public class FechamentoMesController {
 
-  private final FechamentoMesRepository fechamentoRepo;
+  private final FechamentoMesService fechamentoMesService;
 
-  public FechamentoMesController(FechamentoMesRepository fechamentoRepo) {
-    this.fechamentoRepo = fechamentoRepo;
+  public FechamentoMesController(FechamentoMesService fechamentoMesService) {
+    this.fechamentoMesService = fechamentoMesService;
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public FechamentoMes fechar(@RequestParam int ano,
+  @Operation(summary = "Fechar mês", description = "Fecha um mês (ano/mes). Enquanto fechado, não é permitido criar/alterar/excluir lançamentos com data nesse mês.")
+  @ApiResponses({
+      @ApiResponse(responseCode = "201", description = "Mês fechado"),
+      @ApiResponse(responseCode = "400", description = "Ano/mês inválido", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "409", description = "Mês já fechado", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+  })
+  public FechamentoMesResponse fechar(@RequestParam int ano,
       @RequestParam int mes,
+      @RequestParam(required = false) Long categoriaId,
       @RequestParam(required = false) String observacao) {
-
-    validarMesAno(ano, mes);
-
-    if (fechamentoRepo.existsByAnoAndMes(ano, mes)) {
-      throw new DuplicateException("Este mês já está fechado.");
-    }
-
-    return fechamentoRepo.save(new FechamentoMes(ano, mes, observacao));
+    return fechamentoMesService.fechar(ano, mes, categoriaId, observacao);
   }
 
   @GetMapping
-  public List<FechamentoMes> listar() {
-    return fechamentoRepo.findAll().stream()
-        .sorted(Comparator.comparing(FechamentoMes::getAno).thenComparing(FechamentoMes::getMes))
-        .toList();
+  @Operation(summary = "Listar meses fechados")
+  public List<FechamentoMesResponse> listar(@RequestParam(required = false) Long categoriaId) {
+    return fechamentoMesService.listar(categoriaId);
   }
 
   // Opcional (bom para DEV): reabrir mês
   @DeleteMapping
-  @Transactional
-  public ResponseEntity<Map<String, String>> reabrir(@RequestParam int ano, @RequestParam int mes) {
-    validarMesAno(ano, mes);
-
-    fechamentoRepo.findByAnoAndMes(ano, mes)
-        .orElseThrow(() -> new NotFoundException("Fechamento não encontrado."));
-
-    fechamentoRepo.deleteByAnoAndMes(ano, mes);
+  @Operation(summary = "Reabrir mês", description = "Reabre um mês fechado (bom para DEV).")
+  @ApiResponses({
+      @ApiResponse(responseCode = "200", description = "Reaberto"),
+      @ApiResponse(responseCode = "400", description = "Ano/mês inválido", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+      @ApiResponse(responseCode = "404", description = "Fechamento não encontrado", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+  })
+  public ResponseEntity<Map<String, String>> reabrir(@RequestParam int ano, @RequestParam int mes,
+      @RequestParam(required = false) Long categoriaId) {
+    fechamentoMesService.reabrir(ano, mes, categoriaId);
 
     return ResponseEntity.ok(Map.of("mensagem", "Mês reaberto com sucesso!"));
-  }
-
-  private void validarMesAno(int ano, int mes) {
-    if (mes < 1 || mes > 12)
-      throw new IllegalArgumentException("Mês deve ser entre 1 e 12.");
-    if (ano < 2000 || ano > 2100)
-      throw new IllegalArgumentException("Ano inválido.");
   }
 }

@@ -24,15 +24,22 @@ class LancamentoEmprestimoIT {
   @LocalServerPort
   int port;
 
+  private String token;
+
   @BeforeEach
   void setup() {
     RestAssured.baseURI = "http://localhost";
     RestAssured.port = port;
+    token = TestAuth.token(port);
+  }
+
+  private io.restassured.specification.RequestSpecification auth() {
+    return given().auth().oauth2(token);
   }
 
   private int criaPessoa(String nome) {
     String nomeUnico = nome + "-" + UUID.randomUUID();
-    return given().contentType(ContentType.JSON)
+    return auth().contentType(ContentType.JSON)
         .body("{\"nome\":\"" + nomeUnico + "\"}")
         .when().post("/api/pessoas")
         .then().statusCode(201)
@@ -60,7 +67,7 @@ class LancamentoEmprestimoIT {
         }
         """.formatted(nataliaId, neiaId, joaoId);
 
-    given().contentType(ContentType.JSON)
+    auth().contentType(ContentType.JSON)
         .body(body)
         .when().post("/api/lancamentos")
         .then()
@@ -75,6 +82,7 @@ class LancamentoEmprestimoIT {
     // setup)
     URI uri = URI.create("http://localhost:" + port + "/api/lancamentos");
     HttpRequest request = HttpRequest.newBuilder(uri)
+        .header("Authorization", "Bearer " + token)
         .header("Accept", "application/json")
         .GET()
         .build();
@@ -109,7 +117,7 @@ class LancamentoEmprestimoIT {
         }
         """.formatted(nataliaId, neiaId);
 
-    given().contentType(ContentType.JSON)
+    auth().contentType(ContentType.JSON)
         .body(body)
         .when().post("/api/lancamentos")
         .then()

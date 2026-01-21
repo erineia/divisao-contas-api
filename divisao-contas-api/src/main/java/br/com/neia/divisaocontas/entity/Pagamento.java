@@ -1,10 +1,12 @@
 package br.com.neia.divisaocontas.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
+@Schema(hidden = true)
 public class Pagamento {
 
   @Id
@@ -21,6 +23,9 @@ public class Pagamento {
 
   @ManyToOne(optional = false)
   private Pessoa recebedor;
+
+  @ManyToOne
+  private Categoria categoria;
 
   private String observacao;
 
@@ -58,6 +63,14 @@ public class Pagamento {
 
   public void setRecebedor(Pessoa recebedor) {
     this.recebedor = recebedor;
+  }
+
+  public Categoria getCategoria() {
+    return categoria;
+  }
+
+  public void setCategoria(Categoria categoria) {
+    this.categoria = categoria;
   }
 
   public String getObservacao() {

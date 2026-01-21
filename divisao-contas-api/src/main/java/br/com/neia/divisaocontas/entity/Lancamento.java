@@ -28,6 +28,10 @@ public class Lancamento {
   @JoinColumn(name = "pagador_id", nullable = false)
   private Pessoa pagador;
 
+  @ManyToOne
+  @JoinColumn(name = "categoria_id")
+  private Categoria categoria;
+
   public Lancamento() {
   }
 
@@ -51,6 +55,10 @@ public class Lancamento {
     return pagador;
   }
 
+  public Categoria getCategoria() {
+    return categoria;
+  }
+
   public void setId(Long id) {
     this.id = id;
   }
@@ -69,6 +77,10 @@ public class Lancamento {
 
   public void setPagador(Pessoa pagador) {
     this.pagador = pagador;
+  }
+
+  public void setCategoria(Categoria categoria) {
+    this.categoria = categoria;
   }
 
   @OneToMany(mappedBy = "lancamento", cascade = CascadeType.ALL, orphanRemoval = true)

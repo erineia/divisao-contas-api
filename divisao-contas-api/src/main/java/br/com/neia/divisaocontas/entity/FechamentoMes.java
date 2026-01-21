@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "fechamento_mes", uniqueConstraints = @UniqueConstraint(columnNames = { "ano", "mes" }))
+@Table(name = "fechamento_mes_categoria", uniqueConstraints = @UniqueConstraint(columnNames = { "categoria_id", "ano", "mes" }))
 public class FechamentoMes {
 
   @Id
@@ -15,6 +15,10 @@ public class FechamentoMes {
   private int ano;
   private int mes;
 
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "categoria_id", nullable = false)
+  private Categoria categoria;
+
   private LocalDateTime dataFechamento;
 
   private String observacao;
@@ -22,9 +26,10 @@ public class FechamentoMes {
   public FechamentoMes() {
   }
 
-  public FechamentoMes(int ano, int mes, String observacao) {
+  public FechamentoMes(int ano, int mes, Categoria categoria, String observacao) {
     this.ano = ano;
     this.mes = mes;
+    this.categoria = categoria;
     this.observacao = observacao;
     this.dataFechamento = LocalDateTime.now();
   }
@@ -41,6 +46,10 @@ public class FechamentoMes {
     return mes;
   }
 
+  public Categoria getCategoria() {
+    return categoria;
+  }
+
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
   public LocalDateTime getDataFechamento() {
     return dataFechamento;
@@ -48,6 +57,10 @@ public class FechamentoMes {
 
   public String getObservacao() {
     return observacao;
+  }
+
+  public void setCategoria(Categoria categoria) {
+    this.categoria = categoria;
   }
 
   public void setObservacao(String observacao) {

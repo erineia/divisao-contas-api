@@ -1,12 +1,15 @@
 package br.com.neia.divisaocontas.dto;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
 @JsonPropertyOrder({ "pessoaId", "nome", "valor" })
 public class LancamentoPessoaValorResponse {
   private Long pessoaId;
+
   private String nome;
+
   private BigDecimal valor;
 
   public LancamentoPessoaValorResponse() {

@@ -1,19 +1,20 @@
+package br.com.neia.divisaocontas.exception;
 
-package br.com.neia.divisaocontas.controller;
-
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.dao.DataIntegrityViolationException;
-import br.com.neia.divisaocontas.exception.DuplicateException;
-import br.com.neia.divisaocontas.exception.NotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+
 import io.swagger.v3.oas.annotations.Hidden;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,6 +24,8 @@ import java.util.Map;
 @RestControllerAdvice
 @Hidden // Oculta do Swagger UI, mas pode ser removido se quiser exibir
 public class ApiExceptionHandler {
+
+  private static final Logger log = LoggerFactory.getLogger(ApiExceptionHandler.class);
 
   private static final DateTimeFormatter DATA_HORA_BR = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 
@@ -57,6 +60,18 @@ public class ApiExceptionHandler {
     return build(HttpStatus.BAD_REQUEST, "JSON inválido ou campos com formato incorreto.", req.getRequestURI());
   }
 
+  // 400: validação de Bean Validation (@Valid)
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<Map<String, Object>> handleNotValid(MethodArgumentNotValidException ex,
+      jakarta.servlet.http.HttpServletRequest req) {
+    String mensagem = ex.getBindingResult().getFieldErrors().stream()
+        .findFirst()
+        .map(err -> err.getDefaultMessage() != null ? err.getDefaultMessage() : ("Campo inválido: " + err.getField()))
+        .orElse("Dados inválidos.");
+
+    return build(HttpStatus.BAD_REQUEST, mensagem, req.getRequestURI());
+  }
+
   // 409: duplicidade / conflito
   @ExceptionHandler(DuplicateException.class)
   public ResponseEntity<Map<String, Object>> handleDuplicate(DuplicateException ex,
@@ -84,10 +99,26 @@ public class ApiExceptionHandler {
     return build(HttpStatus.CONFLICT, mensagem, path);
   }
 
+  // 401: credenciais inválidas / erro de autenticação
+  @ExceptionHandler(AuthenticationException.class)
+  public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex,
+      jakarta.servlet.http.HttpServletRequest req) {
+    log.warn("Falha de autenticação em {}: {}", req.getRequestURI(), ex.getClass().getSimpleName());
+    return build(HttpStatus.UNAUTHORIZED, "Usuário e/ou senha inválidos.", req.getRequestURI());
+  }
+
+  // 403: autenticado porém sem permissão
+  @ExceptionHandler(AccessDeniedException.class)
+  public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex,
+      jakarta.servlet.http.HttpServletRequest req) {
+    return build(HttpStatus.FORBIDDEN, "Acesso negado.", req.getRequestURI());
+  }
+
   // 500: erro inesperado (não expor detalhes)
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex,
       jakarta.servlet.http.HttpServletRequest req) {
+    log.error("Erro inesperado em {}", req.getRequestURI(), ex);
     return build(HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro inesperado.", req.getRequestURI());
   }
 

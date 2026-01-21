@@ -1,0 +1,11 @@
+
+.container { height: 100vh; }
+.sidenav { width: 240px; }
+.content { padding: 16px; }
+.spacer { flex: 1; }
+.menu-btn { display: none; }
+
+@media (max-width: 768px) {
+  .sidenav { width: 260px; }
+  .menu-btn { display: inline-flex; }
+}

@@ -2,17 +2,29 @@ package br.com.neia.divisaocontas.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "id", "descricao", "data", "valor", "divide", "pagador", "participantes", "devedores" })
+@JsonPropertyOrder({ "id", "descricao", "data", "valor", "categoriaId", "categoriaNome", "divide", "pagador",
+    "participantes", "devedores" })
 public class LancamentoResponse {
   private Long id;
+
   private String descricao;
+
   private String data; // dd/MM/yyyy
+
   private BigDecimal valor;
+
+  private Long categoriaId;
+
+  private String categoriaNome;
+
   private boolean divide;
+
+  @Schema(implementation = PessoaResponse.class)
   private PessoaResponse pagador;
 
   private List<LancamentoPessoaValorResponse> participantes;
@@ -35,6 +47,14 @@ public class LancamentoResponse {
 
   public BigDecimal getValor() {
     return valor;
+  }
+
+  public Long getCategoriaId() {
+    return categoriaId;
+  }
+
+  public String getCategoriaNome() {
+    return categoriaNome;
   }
 
   public boolean isDivide() {
@@ -67,6 +87,14 @@ public class LancamentoResponse {
 
   public void setValor(BigDecimal valor) {
     this.valor = valor;
+  }
+
+  public void setCategoriaId(Long categoriaId) {
+    this.categoriaId = categoriaId;
+  }
+
+  public void setCategoriaNome(String categoriaNome) {
+    this.categoriaNome = categoriaNome;
   }
 
   public void setDivide(boolean divide) {

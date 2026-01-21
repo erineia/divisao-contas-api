@@ -1,101 +1,59 @@
 package br.com.neia.divisaocontas.controller;
 
+import br.com.neia.divisaocontas.dto.ErrorResponse;
 import br.com.neia.divisaocontas.dto.PessoaCreateRequest;
 import br.com.neia.divisaocontas.dto.PessoaResponse;
-import br.com.neia.divisaocontas.entity.Pessoa;
-import br.com.neia.divisaocontas.exception.DuplicateException;
-import br.com.neia.divisaocontas.exception.NotFoundException;
-import br.com.neia.divisaocontas.repository.LancamentoRateioRepository;
-import br.com.neia.divisaocontas.repository.LancamentoRepository;
-import br.com.neia.divisaocontas.repository.PagamentoRepository;
-import br.com.neia.divisaocontas.repository.PessoaRepository;
+import br.com.neia.divisaocontas.service.PessoaService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pessoas")
+@Tag(name = "Pessoas")
 public class PessoaController {
 
-  private final PessoaRepository pessoaRepository;
-  private final PagamentoRepository pagamentoRepository;
-  private final LancamentoRepository lancamentoRepository;
-  private final LancamentoRateioRepository rateioRepository;
+  private final PessoaService pessoaService;
 
-  public PessoaController(PessoaRepository pessoaRepository,
-      PagamentoRepository pagamentoRepository,
-      LancamentoRepository lancamentoRepository,
-      LancamentoRateioRepository rateioRepository) {
-    this.pessoaRepository = pessoaRepository;
-    this.pagamentoRepository = pagamentoRepository;
-    this.lancamentoRepository = lancamentoRepository;
-    this.rateioRepository = rateioRepository;
+  public PessoaController(PessoaService pessoaService) {
+    this.pessoaService = pessoaService;
   }
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
+  @Operation(summary = "Criar pessoa")
+  @ApiResponses({
+      @ApiResponse(responseCode = "201", description = "Pessoa criada"),
+      @ApiResponse(responseCode = "409", description = "Nome duplicado", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+  })
   public PessoaResponse criar(@RequestBody PessoaCreateRequest req) {
-    String nome = req.getNome() == null ? "" : req.getNome().trim();
-
-    if (nome.isEmpty()) {
-      throw new IllegalArgumentException("nome é obrigatório");
-    }
-
-    if (pessoaRepository.existsByNomeIgnoreCase(nome)) {
-      throw new DuplicateException("Já existe uma pessoa com esse nome.");
-    }
-
-    Pessoa salva = pessoaRepository.save(new Pessoa(nome));
-    return new PessoaResponse(salva.getId(), salva.getNome());
+    return pessoaService.criar(req);
   }
 
   @GetMapping
+  @Operation(summary = "Listar pessoas")
   public List<PessoaResponse> listar() {
-    return pessoaRepository.findAll()
-        .stream()
-        .map(p -> new PessoaResponse(p.getId(), p.getNome()))
-        .toList();
+    return pessoaService.listar();
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<?> atualizar(@PathVariable Long id, @RequestBody PessoaCreateRequest req) {
-    Pessoa pessoa = pessoaRepository.findById(id)
-        .orElseThrow(() -> new NotFoundException("Pessoa não encontrada."));
-
-    String nome = req.getNome() == null ? "" : req.getNome().trim();
-    if (nome.isEmpty()) {
-      throw new IllegalArgumentException("nome é obrigatório");
-    }
-
-    if (pessoaRepository.existsByNomeIgnoreCaseAndIdNot(nome, id)) {
-      throw new DuplicateException("Já existe uma pessoa com esse nome.");
-    }
-
-    pessoa.setNome(nome);
-    Pessoa salva = pessoaRepository.save(pessoa);
-    return ResponseEntity.ok(new PessoaResponse(salva.getId(), salva.getNome()));
+  @Operation(summary = "Atualizar pessoa")
+  public ResponseEntity<PessoaResponse> atualizar(@PathVariable Long id, @RequestBody PessoaCreateRequest req) {
+    return ResponseEntity.ok(pessoaService.atualizar(id, req));
   }
 
   @DeleteMapping("/{id}")
-  @Transactional
+  @Operation(summary = "Excluir pessoa")
   public ResponseEntity<Map<String, String>> deletar(@PathVariable Long id) {
-    pessoaRepository.findById(id)
-        .orElseThrow(() -> new NotFoundException("Pessoa não encontrada."));
-
-    boolean temPagamentos = pagamentoRepository.existsByPagadorId(id) || pagamentoRepository.existsByRecebedorId(id);
-    boolean temLancamentos = lancamentoRepository.existsByPagadorId(id);
-    boolean temRateios = rateioRepository.existsByPessoaId(id);
-
-    if (temPagamentos || temLancamentos || temRateios) {
-      throw new IllegalArgumentException(
-          "Não é possível excluir a pessoa porque ela possui vínculos (pagamentos, lançamentos ou rateios).");
-    }
-
-    pessoaRepository.deleteById(id);
+    pessoaService.deletar(id);
     return ResponseEntity.ok(Map.of("mensagem", "Pessoa excluída com sucesso!"));
   }
 

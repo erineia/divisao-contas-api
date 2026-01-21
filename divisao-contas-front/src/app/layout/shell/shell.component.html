@@ -1,0 +1,47 @@
+<mat-sidenav-container class="container">
+  <mat-sidenav #sidenav mode="side" opened class="sidenav">
+    <mat-toolbar>Divisão</mat-toolbar>
+
+    <mat-nav-list>
+      <a mat-list-item routerLink="/" routerLinkActive="active">
+        <mat-icon>home</mat-icon>
+        <span>Início</span>
+      </a>
+
+      <a mat-list-item routerLink="/lancamentos" routerLinkActive="active">
+        <mat-icon>receipt_long</mat-icon>
+        <span>Lançamentos</span>
+      </a>
+
+      <a mat-list-item routerLink="/pagamentos" routerLinkActive="active">
+        <mat-icon>payments</mat-icon>
+        <span>Pagamentos</span>
+      </a>
+
+      <a mat-list-item routerLink="/saldos" routerLinkActive="active">
+        <mat-icon>account_balance</mat-icon>
+        <span>Saldos</span>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary" class="toolbar">
+      <button mat-icon-button (click)="sidenav.toggle()" class="menu-btn">
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <span class="title">Divisão de Contas</span>
+      <span class="spacer"></span>
+
+      <button mat-button (click)="sair()">
+        <mat-icon>logout</mat-icon>
+        Sair
+      </button>
+    </mat-toolbar>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>

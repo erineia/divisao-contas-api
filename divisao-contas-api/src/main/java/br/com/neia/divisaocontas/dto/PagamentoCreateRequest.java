@@ -1,13 +1,25 @@
 package br.com.neia.divisaocontas.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class PagamentoCreateRequest {
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   private LocalDate data;
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   private BigDecimal valor;
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   private Long pagadorId;
+
+  @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   private Long recebedorId;
+
+  private Long categoriaId;
+
   private String observacao;
 
   public LocalDate getData() {
@@ -38,8 +50,16 @@ public class PagamentoCreateRequest {
     return recebedorId;
   }
 
+  public Long getCategoriaId() {
+    return categoriaId;
+  }
+
   public void setRecebedorId(Long recebedorId) {
     this.recebedorId = recebedorId;
+  }
+
+  public void setCategoriaId(Long categoriaId) {
+    this.categoriaId = categoriaId;
   }
 
   public String getObservacao() {

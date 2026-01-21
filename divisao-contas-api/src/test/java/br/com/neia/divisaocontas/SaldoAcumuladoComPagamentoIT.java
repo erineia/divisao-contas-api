@@ -28,10 +28,17 @@ class SaldoAcumuladoComPagamentoIT {
   @LocalServerPort
   int port;
 
+  private String token;
+
   @BeforeEach
   void setup() {
     RestAssured.baseURI = "http://localhost";
     RestAssured.port = port;
+    token = TestAuth.token(port);
+  }
+
+  private io.restassured.specification.RequestSpecification auth() {
+    return given().auth().oauth2(token);
   }
 
   private static record PessoaCriada(int id, String nome) {
@@ -39,7 +46,7 @@ class SaldoAcumuladoComPagamentoIT {
 
   private PessoaCriada criaPessoa(String nomeBase) {
     String nomeUnico = nomeBase + "-" + UUID.randomUUID();
-    int id = given().contentType(ContentType.JSON)
+    int id = auth().contentType(ContentType.JSON)
         .body("{\"nome\":\"" + nomeUnico + "\"}")
         .when().post("/api/pessoas")
         .then().statusCode(201)
@@ -54,42 +61,52 @@ class SaldoAcumuladoComPagamentoIT {
     PessoaCriada natalia = criaPessoa("Natalia");
     PessoaCriada neia = criaPessoa("Neia");
 
+    // Usa uma categoria explícita para acumular entre meses dentro do mesmo "projeto"
+    String categoriaNome = "ProjetoSaldo-" + UUID.randomUUID();
+    int categoriaId = auth().contentType(ContentType.JSON)
+        .body("{\"nome\":\"" + categoriaNome + "\"}")
+        .when().post("/api/categorias")
+        .then().statusCode(201)
+        .extract().path("id");
+
     // 1) Janeiro: Natalia paga 500 e Neia fica devendo 500 (emprestimo)
     String lancJan = """
         {
           "descricao": "Mercado Jan",
-          "data": "2026-01-10",
+          "data": "2099-04-10",
           "valor": 500,
           "pagadorId": %d,
+          "categoriaId": %d,
           "divide": false,
           "devedores": [
             { "pessoaId": %d, "valor": 500 }
           ]
         }
-        """.formatted(natalia.id(), neia.id());
+        """.formatted(natalia.id(), categoriaId, neia.id());
 
-    given().contentType(ContentType.JSON)
+    auth().contentType(ContentType.JSON)
         .body(lancJan)
         .when().post("/api/lancamentos")
         .then().statusCode(201);
 
     // 2) Consulta acumulado em Janeiro (Neia deve 500 para Natalia)
     // endpoint retorna TransferenciaResponse: [{devedor, credor, valor}]
-    String bodyJan = getJson("/api/saldos/acumulado?ateAno=2026&ateMes=1");
+    String bodyJan = getJson("/api/saldos/acumulado?ateAno=2099&ateMes=4&categoriaId=" + categoriaId);
     assertTransferencia(bodyJan, neia.nome(), natalia.nome(), new BigDecimal("500.00"));
 
     // 3) Fevereiro: Neia paga 600 para Natalia (quita 500 e sobra 100)
     // ⚠️ AJUSTE os campos do JSON conforme seu PagamentoCreateRequest
     String pagFev = """
         {
-          "data": "2026-02-05",
+          "data": "2099-05-05",
           "valor": 600,
           "pagadorId": %d,
-          "recebedorId": %d
+          "recebedorId": %d,
+          "categoriaId": %d
         }
-        """.formatted(neia.id(), natalia.id());
+        """.formatted(neia.id(), natalia.id(), categoriaId);
 
-    given().contentType(ContentType.JSON)
+    auth().contentType(ContentType.JSON)
         .body(pagFev)
         .when().post("/api/pagamentos")
         .then().statusCode(anyOf(is(200), is(201)));
@@ -97,13 +114,14 @@ class SaldoAcumuladoComPagamentoIT {
     // 4) Consulta acumulado em Fevereiro:
     // pagou 600, devia 500 => zera a dívida Neia->Natalia e cria crédito invertido
     // Natalia->Neia de 100
-    String bodyFev = getJson("/api/saldos/acumulado?ateAno=2026&ateMes=2");
+    String bodyFev = getJson("/api/saldos/acumulado?ateAno=2099&ateMes=5&categoriaId=" + categoriaId);
     assertTransferencia(bodyFev, natalia.nome(), neia.nome(), new BigDecimal("100.00"));
   }
 
   private String getJson(String pathAndQuery) {
     URI uri = URI.create("http://localhost:" + port + pathAndQuery);
     HttpRequest request = HttpRequest.newBuilder(uri)
+        .header("Authorization", "Bearer " + token)
         .header("Accept", "application/json")
         .GET()
         .build();

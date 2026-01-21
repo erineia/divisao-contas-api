@@ -1,9 +1,11 @@
 package br.com.neia.divisaocontas.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "pessoa")
+@Schema(hidden = true)
 public class Pessoa {
 
   @Id
