@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -19,6 +20,7 @@ const MATERIAL_MODULES = [
   MatInputModule,
   MatFormFieldModule,
   MatCardModule,
+  MatExpansionModule,
   MatIconModule,
   MatButtonModule,
 ];

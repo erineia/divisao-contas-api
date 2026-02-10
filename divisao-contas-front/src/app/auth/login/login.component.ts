@@ -10,14 +10,14 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MaterialModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent {
   form: FormGroup;
 
   loading = false;
   errorMessage: string | null = null;
-
+  hide = true;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -38,21 +38,19 @@ export class LoginComponent {
     this.errorMessage = null;
     this.loading = true;
 
-    this.authService.login(this.form.value)
-      .subscribe({
-        next: () => {
-          this.loading = false;
-          this.router.navigate(['/home']);
-        },
-        error: (err: any) => {
-          this.loading = false;
-          if (err?.status === 401 || err?.status === 403) {
-            this.errorMessage = 'Usuário ou senha inválidos.';
-          } else {
-            this.errorMessage = 'Erro ao conectar com o servidor.';
-          }
-        },
-      });
+    this.authService.login(this.form.value).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/home']);
+      },
+      error: (err: any) => {
+        this.loading = false;
+        if (err?.status === 401 || err?.status === 403) {
+          this.errorMessage = 'Usuário ou senha inválidos.';
+        } else {
+          this.errorMessage = 'Erro ao conectar com o servidor.';
+        }
+      },
+    });
   }
 }
-
