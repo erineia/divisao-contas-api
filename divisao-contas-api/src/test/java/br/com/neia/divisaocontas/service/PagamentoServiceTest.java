@@ -50,7 +50,7 @@ class PagamentoServiceTest {
     p.setNome("A");
 
     when(categoriaService.resolveCategoria(any(), eq(req.getData())))
-      .thenReturn(new Categoria("Mes/01"));
+        .thenReturn(new Categoria("Mes/01"));
 
     when(pessoaRepository.findById(1L)).thenReturn(Optional.of(p));
 

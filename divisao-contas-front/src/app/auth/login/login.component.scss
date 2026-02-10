@@ -1,0 +1,15 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+mat-card {
+  width: 100%;
+  max-width: 400px;
+}

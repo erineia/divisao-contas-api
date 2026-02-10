@@ -3,13 +3,24 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "analytics": "04278790-e086-4d73-985a-64426475629e"
+    "analytics": "74a6cd52-aaca-494a-9437-cc13b3705c20"
   },
   "newProjectRoot": "projects",
   "projects": {
     "divisao-contas-front": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss",
+          "standalone": false
+        },
+        "@schematics/angular:directive": {
+          "standalone": false
+        },
+        "@schematics/angular:pipe": {
+          "standalone": false
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -19,6 +30,7 @@
           "options": {
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
@@ -26,14 +38,8 @@
               }
             ],
             "styles": [
-              "src/material-theme.scss",
-              "src/styles.css"
-            ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+              "src/styles.scss"
+            ]
           },
           "configurations": {
             "production": {

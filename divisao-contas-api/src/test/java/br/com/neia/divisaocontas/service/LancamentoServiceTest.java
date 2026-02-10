@@ -54,11 +54,11 @@ class LancamentoServiceTest {
     req.setPagadorId(1L);
 
     when(categoriaService.resolveCategoria(any(), eq(req.getData())))
-      .thenReturn(new Categoria("Mes/01"));
+        .thenReturn(new Categoria("Mes/01"));
 
     doThrow(new IllegalArgumentException("Este mês está fechado. Reabra para alterar."))
         .when(fechamentoMesService)
-      .validarAberto(any(), any());
+        .validarAberto(any(), any());
 
     assertThrows(IllegalArgumentException.class, () -> service.criar(req));
 

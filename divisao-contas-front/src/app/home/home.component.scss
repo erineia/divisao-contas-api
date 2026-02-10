@@ -1,0 +1,29 @@
+.sidenav-container {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 260px;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.content {
+  padding: 16px;
+}
+mat-nav-list a {
+  font-size: 15px;
+  font-weight: 500;
+}
+h1 {
+  font-size: 28px;
+  font-weight: 500;
+}

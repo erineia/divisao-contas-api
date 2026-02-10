@@ -50,7 +50,7 @@ class LancamentoFechamentoIT {
     // 2) fecha 03/2099 (evita interferir com outros ITs)
     auth()
         .when()
-      .post("/api/fechamentos?ano=2099&mes=3")
+        .post("/api/fechamentos?ano=2099&mes=3")
         .then()
         .statusCode(201);
 

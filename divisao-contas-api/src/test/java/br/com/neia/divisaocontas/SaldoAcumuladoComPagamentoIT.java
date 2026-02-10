@@ -61,7 +61,8 @@ class SaldoAcumuladoComPagamentoIT {
     PessoaCriada natalia = criaPessoa("Natalia");
     PessoaCriada neia = criaPessoa("Neia");
 
-    // Usa uma categoria explícita para acumular entre meses dentro do mesmo "projeto"
+    // Usa uma categoria explícita para acumular entre meses dentro do mesmo
+    // "projeto"
     String categoriaNome = "ProjetoSaldo-" + UUID.randomUUID();
     int categoriaId = auth().contentType(ContentType.JSON)
         .body("{\"nome\":\"" + categoriaNome + "\"}")

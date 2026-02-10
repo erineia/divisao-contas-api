@@ -37,7 +37,8 @@ class SaldoServiceTest {
 
     assertThrows(IllegalArgumentException.class, () -> service.quemDeve(2026, 0, null));
 
-    verifyNoInteractions(pessoaRepository, lancamentoRepository, rateioRepository, pagamentoRepository, categoriaService);
+    verifyNoInteractions(pessoaRepository, lancamentoRepository, rateioRepository, pagamentoRepository,
+        categoriaService);
   }
 
   @Test
@@ -48,6 +49,7 @@ class SaldoServiceTest {
     assertThrows(IllegalArgumentException.class,
         () -> service.saldoPorPeriodo("2026-01-10", "2026-01-01", null));
 
-    verifyNoInteractions(pessoaRepository, lancamentoRepository, rateioRepository, pagamentoRepository, categoriaService);
+    verifyNoInteractions(pessoaRepository, lancamentoRepository, rateioRepository, pagamentoRepository,
+        categoriaService);
   }
 }

@@ -111,7 +111,7 @@ public class SecurityConfig {
   public UserDetailsService userDetailsService(
       PasswordEncoder encoder,
       @Value("${app.security.user.name:admin}") String username,
-      @Value("${app.security.user.password:admin}") String rawPassword) {
+      @Value("${app.security.user.password:123456}") String rawPassword) {
 
     return new InMemoryUserDetailsManager(
         User.withUsername(username)
