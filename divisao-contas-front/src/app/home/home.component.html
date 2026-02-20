@@ -5,19 +5,21 @@
     [mode]="isSmallScreen ? 'over' : 'side'"
     [opened]="!isSmallScreen"
   >
+  <div class="sidenav-content">
    <mat-accordion class="menu" multi="true">
   <!-- Pessoa -->
   <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-icon>settings</mat-icon>
+      <mat-icon class="menu-icon">person</mat-icon>
       <span class="menu-title">Pessoa</span>
     </mat-expansion-panel-header>
 
-    <a mat-button class="menu-item" routerLink="pessoas/cadastrar" routerLinkActive="active">
+    <!-- rotas filhas de /home para manter o menu lateral -->
+    <a mat-button class="menu-item" routerLink="/home/pessoas/cadastrar" routerLinkActive="active">
       Cadastrar Pessoa
     </a>
 
-    <a mat-button class="menu-item" routerLink="pessoas/pesquisar" routerLinkActive="active">
+    <a mat-button class="menu-item" routerLink="/home/pessoas/pesquisar" routerLinkActive="active">
       Pesquisar Pessoa
     </a>
   </mat-expansion-panel>
@@ -25,7 +27,7 @@
   <!-- Pagamentos -->
   <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-icon>layers</mat-icon>
+      <mat-icon class="menu-icon">account_balance_wallet</mat-icon>
       <span class="menu-title">Pagamentos</span>
     </mat-expansion-panel-header>
 
@@ -41,7 +43,7 @@
   <!-- Lançamentos -->
   <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-icon>layers</mat-icon>
+      <mat-icon class="menu-icon">receipt_long</mat-icon>
       <span class="menu-title">Lançamentos</span>
     </mat-expansion-panel-header>
 
@@ -57,7 +59,7 @@
   <!-- Categorias -->
   <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-icon>category</mat-icon>
+      <mat-icon class="menu-icon">category</mat-icon>
       <span class="menu-title">Categorias</span>
     </mat-expansion-panel-header>
 
@@ -73,7 +75,7 @@
   <!-- Fechamentos -->
   <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-icon>event</mat-icon>
+      <mat-icon class="menu-icon">lock_clock</mat-icon>
       <span class="menu-title">Fechamentos</span>
     </mat-expansion-panel-header>
 
@@ -85,7 +87,7 @@
   <!-- Relatórios -->
   <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-icon>description</mat-icon>
+      <mat-icon class="menu-icon">insert_chart_outlined</mat-icon>
       <span class="menu-title">Relatórios</span>
     </mat-expansion-panel-header>
 
@@ -93,7 +95,13 @@
       Exportar Relatórios
     </a>
   </mat-expansion-panel>
-</mat-accordion>
+  </mat-accordion>
+
+  <div class="sidenav-footer">
+    <div class="sidenav-footer-title">Divisão de Contas</div>
+    <div class="sidenav-footer-subtitle">v1.0 · by Neia</div>
+  </div>
+  </div>
 
   </mat-sidenav>
 
@@ -115,6 +123,11 @@
 
     <main class="content">
       <router-outlet></router-outlet>
+
+      <footer class="content-footer">
+        <span>Divisão de Contas</span>
+        <span>© {{ currentYear }}</span>
+      </footer>
     </main>
   </mat-sidenav-content>
 </mat-sidenav-container>

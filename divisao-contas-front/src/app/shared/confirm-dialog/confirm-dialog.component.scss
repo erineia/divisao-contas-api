@@ -1,0 +1,49 @@
+.dialog-container {
+  padding: 20px 26px 18px;
+  background: #232a3d;
+  color: #fff;
+  min-width: 360px;
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45), 0 10px 10px rgba(0, 0, 0, 0.35);
+  border: 1px solid #3f6bff;
+}
+
+/* remove barra de rolagem interna da modal */
+:host ::ng-deep .mat-mdc-dialog-surface {
+  overflow-x: hidden !important;
+  overflow-y: visible;
+}
+
+.dialog-title {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.dialog-message {
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #d7e0ff;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-yes {
+  background-color: #4caf50; /* verde */
+  color: #fff;
+}
+
+.btn-yes:hover {
+  background-color: #43a047;
+}
+
+.btn-no {
+  /* usa o vermelho do color="warn" e só garante texto branco */
+  color: #fff;
+}

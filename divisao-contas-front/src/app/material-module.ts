@@ -10,6 +10,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -21,6 +23,8 @@ const MATERIAL_MODULES = [
   MatFormFieldModule,
   MatCardModule,
   MatExpansionModule,
+  MatSnackBarModule,
+  MatDialogModule,
   MatIconModule,
   MatButtonModule,
 ];

@@ -1,0 +1,44 @@
+<div class="page">
+  <div class="breadcrumb">Pesquisar Pessoa</div>
+
+  <div class="card">
+    <div class="card-header">Consultar Pessoa</div>
+
+    <div class="card-body">
+      <form [formGroup]="form">
+        <div class="filter-row">
+          <div class="filter-field">
+            <label class="form-label" for="filtroNome">Nome Pessoa</label>
+            <mat-form-field appearance="fill" class="form-field">
+              <input matInput id="filtroNome" placeholder="Nome Pessoa" formControlName="nome" />
+            </mat-form-field>
+          </div>
+
+          <div class="filter-actions">
+            <button mat-stroked-button color="basic" class="btn-novo" (click)="novo()">Novo</button>
+            <button mat-raised-button color="warn" class="btn-limpar" (click)="limpar()">Limpar</button>
+            <button mat-raised-button color="primary" class="btn-pesquisar" (click)="pesquisar()">Pesquisar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="result-card">
+    <div class="result-header">
+      <span>Nome da Pessoa</span>
+      <span class="result-actions-header"></span>
+    </div>
+    <div class="result-row" *ngFor="let pessoa of pessoasFiltradas">
+      <span>{{ pessoa.nome }}</span>
+      <span class="result-actions">
+        <button mat-icon-button color="primary" aria-label="Editar" class="icon-button" (click)="editar(pessoa)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" aria-label="Excluir" class="icon-button" (click)="excluir(pessoa)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </span>
+    </div>
+  </div>
+</div>

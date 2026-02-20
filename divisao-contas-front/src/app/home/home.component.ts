@@ -15,6 +15,7 @@ import { AuthService } from '../auth/auth.service';
 })
 export class HomeComponent implements OnDestroy {
   isSmallScreen = false;
+  currentYear = new Date().getFullYear();
 
   private destroy$ = new Subject<void>();
 
