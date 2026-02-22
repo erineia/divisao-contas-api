@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface FechamentoMesRepository extends JpaRepository<FechamentoMes, Long> {
-  boolean existsByAnoAndMesAndCategoriaId(int ano, int mes, Long categoriaId);
+  boolean existsByAnoAndMesAndGrupoId(int ano, int mes, Long grupoId);
 
-  boolean existsByCategoriaId(Long categoriaId);
+  boolean existsByGrupoId(Long grupoId);
 
-  Optional<FechamentoMes> findByAnoAndMesAndCategoriaId(int ano, int mes, Long categoriaId);
+  Optional<FechamentoMes> findByAnoAndMesAndGrupoId(int ano, int mes, Long grupoId);
 
-  void deleteByAnoAndMesAndCategoriaId(int ano, int mes, Long categoriaId);
+  void deleteByAnoAndMesAndGrupoId(int ano, int mes, Long grupoId);
 }

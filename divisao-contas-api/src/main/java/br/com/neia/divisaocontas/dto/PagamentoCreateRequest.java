@@ -18,7 +18,7 @@ public class PagamentoCreateRequest {
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   private Long recebedorId;
 
-  private Long categoriaId;
+  private Long grupoId;
 
   private String observacao;
 
@@ -50,16 +50,16 @@ public class PagamentoCreateRequest {
     return recebedorId;
   }
 
-  public Long getCategoriaId() {
-    return categoriaId;
-  }
-
   public void setRecebedorId(Long recebedorId) {
     this.recebedorId = recebedorId;
   }
 
-  public void setCategoriaId(Long categoriaId) {
-    this.categoriaId = categoriaId;
+  public Long getGrupoId() {
+    return grupoId;
+  }
+
+  public void setGrupoId(Long grupoId) {
+    this.grupoId = grupoId;
   }
 
   public String getObservacao() {

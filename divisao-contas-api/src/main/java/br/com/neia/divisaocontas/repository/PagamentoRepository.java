@@ -13,6 +13,6 @@ public interface PagamentoRepository extends JpaRepository<Pagamento, Long> {
 
   boolean existsByRecebedorId(Long recebedorId);
 
-  boolean existsByCategoriaId(Long categoriaId);
+  boolean existsByGrupoId(Long grupoId);
 
 }

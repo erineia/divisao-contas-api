@@ -8,9 +8,9 @@ public class FechamentoMesResponse {
 
   private int mes;
 
-  private Long categoriaId;
+  private Long grupoId;
 
-  private String categoriaNome;
+  private String grupoNome;
 
   private String dataFechamento;
 
@@ -27,13 +27,13 @@ public class FechamentoMesResponse {
     this.observacao = observacao;
   }
 
-  public FechamentoMesResponse(Long id, int ano, int mes, Long categoriaId, String categoriaNome, String dataFechamento,
+  public FechamentoMesResponse(Long id, int ano, int mes, Long grupoId, String grupoNome, String dataFechamento,
       String observacao) {
     this.id = id;
     this.ano = ano;
     this.mes = mes;
-    this.categoriaId = categoriaId;
-    this.categoriaNome = categoriaNome;
+    this.grupoId = grupoId;
+    this.grupoNome = grupoNome;
     this.dataFechamento = dataFechamento;
     this.observacao = observacao;
   }
@@ -58,24 +58,24 @@ public class FechamentoMesResponse {
     return mes;
   }
 
-  public Long getCategoriaId() {
-    return categoriaId;
+  public Long getGrupoId() {
+    return grupoId;
   }
 
-  public String getCategoriaNome() {
-    return categoriaNome;
+  public String getGrupoNome() {
+    return grupoNome;
   }
 
   public void setMes(int mes) {
     this.mes = mes;
   }
 
-  public void setCategoriaId(Long categoriaId) {
-    this.categoriaId = categoriaId;
+  public void setGrupoId(Long grupoId) {
+    this.grupoId = grupoId;
   }
 
-  public void setCategoriaNome(String categoriaNome) {
-    this.categoriaNome = categoriaNome;
+  public void setGrupoNome(String grupoNome) {
+    this.grupoNome = grupoNome;
   }
 
   public String getDataFechamento() {

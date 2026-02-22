@@ -22,8 +22,8 @@ public class RelatorioController {
 
   @GetMapping(value = "/mensal.csv", produces = "text/csv")
   public ResponseEntity<byte[]> relatorioMensalCsv(@RequestParam int ano, @RequestParam int mes,
-      @RequestParam(required = false) Long categoriaId) {
-    RelatorioService.CsvResult result = relatorioService.relatorioMensalCsv(ano, mes, categoriaId);
+      @RequestParam(required = false, name = "grupoId") Long grupoId) {
+    RelatorioService.CsvResult result = relatorioService.relatorioMensalCsv(ano, mes, grupoId);
 
     return ResponseEntity.ok()
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + result.filename() + "\"")

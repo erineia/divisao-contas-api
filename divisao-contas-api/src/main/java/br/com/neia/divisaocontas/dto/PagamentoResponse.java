@@ -10,8 +10,8 @@ public class PagamentoResponse {
   private String recebedor;
   private String observacao;
 
-  private Long categoriaId;
-  private String categoriaNome;
+  private Long grupoId;
+  private String grupoNome;
 
   public PagamentoResponse(Long id, String data, BigDecimal valor, String pagador, String recebedor,
       String observacao) {
@@ -24,15 +24,15 @@ public class PagamentoResponse {
   }
 
   public PagamentoResponse(Long id, String data, BigDecimal valor, String pagador, String recebedor,
-      String observacao, Long categoriaId, String categoriaNome) {
+      String observacao, Long grupoId, String grupoNome) {
     this.id = id;
     this.data = data;
     this.valor = valor;
     this.pagador = pagador;
     this.recebedor = recebedor;
     this.observacao = observacao;
-    this.categoriaId = categoriaId;
-    this.categoriaNome = categoriaNome;
+    this.grupoId = grupoId;
+    this.grupoNome = grupoNome;
   }
 
   public Long getId() {
@@ -59,11 +59,11 @@ public class PagamentoResponse {
     return observacao;
   }
 
-  public Long getCategoriaId() {
-    return categoriaId;
+  public Long getGrupoId() {
+    return grupoId;
   }
 
-  public String getCategoriaNome() {
-    return categoriaNome;
+  public String getGrupoNome() {
+    return grupoNome;
   }
 }

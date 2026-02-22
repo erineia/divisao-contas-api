@@ -20,32 +20,32 @@ public class LancamentoService {
   private final PessoaRepository pessoaRepository;
   private final LancamentoRateioRepository rateioRepository;
   private final FechamentoMesService fechamentoMesService;
-  private final CategoriaService categoriaService;
+  private final GrupoService grupoService;
 
   public LancamentoService(LancamentoRepository lancamentoRepository,
       PessoaRepository pessoaRepository,
       LancamentoRateioRepository rateioRepository,
       FechamentoMesService fechamentoMesService,
-      CategoriaService categoriaService) {
+      GrupoService grupoService) {
     this.lancamentoRepository = lancamentoRepository;
     this.pessoaRepository = pessoaRepository;
     this.rateioRepository = rateioRepository;
     this.fechamentoMesService = fechamentoMesService;
-    this.categoriaService = categoriaService;
+    this.grupoService = grupoService;
   }
 
   @Transactional
   public LancamentoResponse criar(LancamentoCreateRequest req) {
     validarCamposBasicos(req);
 
-    Categoria categoria = categoriaService.resolveCategoria(req.getCategoriaId(), req.getData());
-    fechamentoMesService.validarAberto(req.getData(), categoria.getId());
+    Grupo grupo = grupoService.resolveGrupo(req.getGrupoId(), req.getData());
+    fechamentoMesService.validarAberto(req.getData(), grupo.getId());
 
     Pessoa pagador = pessoaRepository.findById(req.getPagadorId())
         .orElseThrow(() -> new IllegalArgumentException("Pagador não encontrado"));
 
-    boolean existe = lancamentoRepository.existsByDescricaoAndDataAndValorAndPagadorAndCategoria(
-        req.getDescricao(), req.getData(), req.getValor(), pagador, categoria);
+    boolean existe = lancamentoRepository.existsByDescricaoAndDataAndValorAndPagadorAndGrupo(
+        req.getDescricao(), req.getData(), req.getValor(), pagador, grupo);
     if (existe)
       throw new DuplicateException("Lançamento já existe.");
 
@@ -54,7 +54,7 @@ public class LancamentoService {
     l.setData(req.getData());
     l.setValor(req.getValor());
     l.setPagador(pagador);
-    l.setCategoria(categoria);
+    l.setGrupo(grupo);
     // se você tiver coluna divide no entity, aqui é o lugar:
     // l.setDivide(req.isDivide());
 
@@ -70,24 +70,24 @@ public class LancamentoService {
     Lancamento existente = lancamentoRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("Lançamento não encontrado."));
 
-    Categoria categoriaAntiga = existente.getCategoria();
-    if (categoriaAntiga == null) {
-      categoriaAntiga = categoriaService.resolveCategoria(null, existente.getData());
-      existente.setCategoria(categoriaAntiga);
+    Grupo grupoAntigo = existente.getGrupo();
+    if (grupoAntigo == null) {
+      grupoAntigo = grupoService.resolveGrupo(null, existente.getData());
+      existente.setGrupo(grupoAntigo);
     }
 
-    Categoria categoriaNova = categoriaService.resolveCategoria(req.getCategoriaId(), req.getData());
+    Grupo grupoNovo = grupoService.resolveGrupo(req.getGrupoId(), req.getData());
 
     // bloqueia tanto mês antigo quanto novo mês
-    fechamentoMesService.validarAberto(existente.getData(), categoriaAntiga.getId());
+    fechamentoMesService.validarAberto(existente.getData(), grupoAntigo.getId());
     validarCamposBasicos(req);
-    fechamentoMesService.validarAberto(req.getData(), categoriaNova.getId());
+    fechamentoMesService.validarAberto(req.getData(), grupoNovo.getId());
 
     Pessoa pagador = pessoaRepository.findById(req.getPagadorId())
         .orElseThrow(() -> new IllegalArgumentException("Pagador não encontrado"));
 
-    boolean duplicado = lancamentoRepository.existsByDescricaoAndDataAndValorAndPagadorAndCategoriaAndIdNot(
-        req.getDescricao(), req.getData(), req.getValor(), pagador, categoriaNova, id);
+    boolean duplicado = lancamentoRepository.existsByDescricaoAndDataAndValorAndPagadorAndGrupoAndIdNot(
+        req.getDescricao(), req.getData(), req.getValor(), pagador, grupoNovo, id);
     if (duplicado)
       throw new DuplicateException("Lançamento já existe.");
 
@@ -95,7 +95,7 @@ public class LancamentoService {
     existente.setData(req.getData());
     existente.setValor(req.getValor());
     existente.setPagador(pagador);
-    existente.setCategoria(categoriaNova);
+    existente.setGrupo(grupoNovo);
     // se tiver coluna divide:
     // existente.setDivide(req.isDivide());
 
@@ -112,13 +112,13 @@ public class LancamentoService {
     Lancamento l = lancamentoRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("Lançamento não encontrado."));
 
-    Categoria categoria = l.getCategoria();
-    if (categoria == null) {
-      categoria = categoriaService.resolveCategoria(null, l.getData());
-      l.setCategoria(categoria);
+    Grupo grupoAtual = l.getGrupo();
+    if (grupoAtual == null) {
+      grupoAtual = grupoService.resolveGrupo(null, l.getData());
+      l.setGrupo(grupoAtual);
     }
 
-    fechamentoMesService.validarAberto(l.getData(), categoria.getId());
+    fechamentoMesService.validarAberto(l.getData(), grupoAtual.getId());
 
     rateioRepository.deleteByLancamentoId(id);
     lancamentoRepository.deleteById(id);
@@ -142,9 +142,9 @@ public class LancamentoService {
           resp.setDescricao(l.getDescricao());
           resp.setData(l.getData().format(fmt));
           resp.setValor(l.getValor());
-          if (l.getCategoria() != null) {
-            resp.setCategoriaId(l.getCategoria().getId());
-            resp.setCategoriaNome(l.getCategoria().getNome());
+          if (l.getGrupo() != null) {
+            resp.setGrupoId(l.getGrupo().getId());
+            resp.setGrupoNome(l.getGrupo().getNome());
           }
           resp.setDivide(dividido);
           resp.setPagador(new PessoaResponse(l.getPagador().getId(), l.getPagador().getNome()));
@@ -264,9 +264,9 @@ public class LancamentoService {
     resp.setDescricao(salvo.getDescricao());
     resp.setData(salvo.getData().format(fmt));
     resp.setValor(salvo.getValor());
-    if (salvo.getCategoria() != null) {
-      resp.setCategoriaId(salvo.getCategoria().getId());
-      resp.setCategoriaNome(salvo.getCategoria().getNome());
+    if (salvo.getGrupo() != null) {
+      resp.setGrupoId(salvo.getGrupo().getId());
+      resp.setGrupoNome(salvo.getGrupo().getNome());
     }
     resp.setDivide(divide);
     resp.setPagador(new PessoaResponse(salvo.getPagador().getId(), salvo.getPagador().getNome()));

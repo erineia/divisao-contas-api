@@ -38,15 +38,11 @@
   font-weight: 400; /* mais leve */
 }
 
-/* Hover */
+/* Hover/ativo padrão dos links do sidenav: sem tarja de fundo */
 .sidenav a.mat-mdc-list-item:hover,
-.sidenav a.mat-list-item:hover {
-  background: rgba(255, 255, 255, 0.10);
-}
-
-/* Item ativo (quando estiver na rota) */
+.sidenav a.mat-list-item:hover,
 .sidenav a.active {
-  background: rgba(255, 255, 255, 0.18);
+  background: transparent;
 }
 
 /* Espaçamento do conteúdo */
@@ -82,9 +78,9 @@
   height: 52px;
 }
 
-/* Texto do header (grupo do menu) */
+/* Texto do header (grupo do menu): branco por padrão */
 :host ::ng-deep .mat-expansion-panel-header-title {
-  color: rgba(255,255,255,0.85);
+  color: #ffffff;
   font-weight: 400;
 }
 
@@ -101,27 +97,25 @@
   width: 100%;
   justify-content: flex-start;
   padding-left: 54px;
-  color: rgba(255,255,255,0.85); /* branco padrão */
+  color: #ffffff !important; /* branco padrão para todas as labels */
   font-weight: 400;
   text-transform: none;
   border-radius: 0;
   margin: 0 0 1px 0;
   white-space: nowrap; /* impede quebra de linha no texto */
-  transition: background-color 120ms ease, color 120ms ease, border-left-color 120ms ease;
-  border-left: 3px solid transparent;
+  transition: background-color 120ms ease, color 120ms ease;
 }
 
 .menu-item:hover {
-  background: rgba(255,255,255,0.06);
-  color: #ffffff; /* levemente mais claro no hover */
+  background: transparent; /* sem barra / sem bloco de fundo */
+  color: #3f6bff !important; /* fica azul ao passar o mouse */
 }
 
-/* item da rota atual: texto azul e faixa lateral azul, como no exemplo */
+/* item da rota atual (clicado/rota ativa): texto azul e faixa lateral azul */
 .menu-item.active {
-  background: transparent;
-  color: #3f6bff;
+  background: transparent; /* sem bloco de fundo */
+  color: #3f6bff !important; /* azul apenas no item selecionado */
   font-weight: 500;
-  border-left-color: #3f6bff;
 }
 
 /* destaca o grupo quando estiver expandido (texto/ícone em azul) */

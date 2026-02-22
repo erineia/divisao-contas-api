@@ -37,15 +37,15 @@ public class FechamentoMesController {
   })
   public FechamentoMesResponse fechar(@RequestParam int ano,
       @RequestParam int mes,
-      @RequestParam(required = false) Long categoriaId,
+      @RequestParam(required = false, name = "grupoId") Long grupoId,
       @RequestParam(required = false) String observacao) {
-    return fechamentoMesService.fechar(ano, mes, categoriaId, observacao);
+    return fechamentoMesService.fechar(ano, mes, grupoId, observacao);
   }
 
   @GetMapping
   @Operation(summary = "Listar meses fechados")
-  public List<FechamentoMesResponse> listar(@RequestParam(required = false) Long categoriaId) {
-    return fechamentoMesService.listar(categoriaId);
+  public List<FechamentoMesResponse> listar(@RequestParam(required = false, name = "grupoId") Long grupoId) {
+    return fechamentoMesService.listar(grupoId);
   }
 
   // Opcional (bom para DEV): reabrir mês
@@ -57,8 +57,8 @@ public class FechamentoMesController {
       @ApiResponse(responseCode = "404", description = "Fechamento não encontrado", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
   })
   public ResponseEntity<Map<String, String>> reabrir(@RequestParam int ano, @RequestParam int mes,
-      @RequestParam(required = false) Long categoriaId) {
-    fechamentoMesService.reabrir(ano, mes, categoriaId);
+      @RequestParam(required = false, name = "grupoId") Long grupoId) {
+    fechamentoMesService.reabrir(ano, mes, grupoId);
 
     return ResponseEntity.ok(Map.of("mensagem", "Mês reaberto com sucesso!"));
   }

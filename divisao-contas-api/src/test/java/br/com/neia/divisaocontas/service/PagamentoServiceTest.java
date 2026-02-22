@@ -1,7 +1,7 @@
 package br.com.neia.divisaocontas.service;
 
 import br.com.neia.divisaocontas.dto.PagamentoCreateRequest;
-import br.com.neia.divisaocontas.entity.Categoria;
+import br.com.neia.divisaocontas.entity.Grupo;
 import br.com.neia.divisaocontas.entity.Pessoa;
 import br.com.neia.divisaocontas.repository.PagamentoRepository;
 import br.com.neia.divisaocontas.repository.PessoaRepository;
@@ -32,12 +32,12 @@ class PagamentoServiceTest {
   FechamentoMesService fechamentoMesService;
 
   @Mock
-  CategoriaService categoriaService;
+  GrupoService grupoService;
 
   @Test
   void criar_quandoPagadorIgualRecebedor_deveFalharSemSalvar() {
     PagamentoService service = new PagamentoService(pagamentoRepository, pessoaRepository, fechamentoMesService,
-        categoriaService);
+        grupoService);
 
     PagamentoCreateRequest req = new PagamentoCreateRequest();
     req.setData(LocalDate.of(2099, 1, 10));
@@ -49,8 +49,8 @@ class PagamentoServiceTest {
     p.setId(1L);
     p.setNome("A");
 
-    when(categoriaService.resolveCategoria(any(), eq(req.getData())))
-        .thenReturn(new Categoria("Mes/01"));
+    when(grupoService.resolveGrupo(any(), eq(req.getData())))
+        .thenReturn(new Grupo("Mes/01"));
 
     when(pessoaRepository.findById(1L)).thenReturn(Optional.of(p));
 
@@ -63,7 +63,7 @@ class PagamentoServiceTest {
   @Test
   void listarPorPeriodo_quandoFimAntesDoInicio_deveFalharSemConsultarRepositorio() {
     PagamentoService service = new PagamentoService(pagamentoRepository, pessoaRepository, fechamentoMesService,
-        categoriaService);
+        grupoService);
 
     LocalDate inicio = LocalDate.of(2026, 1, 10);
     LocalDate fim = LocalDate.of(2026, 1, 1);

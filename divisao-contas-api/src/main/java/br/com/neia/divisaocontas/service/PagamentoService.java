@@ -4,6 +4,7 @@ import br.com.neia.divisaocontas.dto.PagamentoCreateRequest;
 import br.com.neia.divisaocontas.dto.PagamentoResponse;
 import br.com.neia.divisaocontas.entity.Pagamento;
 import br.com.neia.divisaocontas.entity.Pessoa;
+import br.com.neia.divisaocontas.entity.Grupo;
 import br.com.neia.divisaocontas.exception.NotFoundException;
 import br.com.neia.divisaocontas.repository.PagamentoRepository;
 import br.com.neia.divisaocontas.repository.PessoaRepository;
@@ -20,24 +21,24 @@ public class PagamentoService {
   private final PagamentoRepository pagamentoRepository;
   private final PessoaRepository pessoaRepository;
   private final FechamentoMesService fechamentoMesService;
-  private final CategoriaService categoriaService;
+  private final GrupoService grupoService;
 
   public PagamentoService(PagamentoRepository pagamentoRepository,
       PessoaRepository pessoaRepository,
       FechamentoMesService fechamentoMesService,
-      CategoriaService categoriaService) {
+      GrupoService grupoService) {
     this.pagamentoRepository = pagamentoRepository;
     this.pessoaRepository = pessoaRepository;
     this.fechamentoMesService = fechamentoMesService;
-    this.categoriaService = categoriaService;
+    this.grupoService = grupoService;
   }
 
   @Transactional
   public PagamentoResponse criar(PagamentoCreateRequest req) {
     validar(req);
 
-    var categoria = categoriaService.resolveCategoria(req.getCategoriaId(), req.getData());
-    fechamentoMesService.validarAberto(req.getData(), categoria.getId());
+    Grupo grupo = grupoService.resolveGrupo(req.getGrupoId(), req.getData());
+    fechamentoMesService.validarAberto(req.getData(), grupo.getId());
 
     Pessoa pagador = pessoaRepository.findById(req.getPagadorId())
         .orElseThrow(() -> new IllegalArgumentException("Pagador não encontrado"));
@@ -55,7 +56,7 @@ public class PagamentoService {
     p.setPagador(pagador);
     p.setRecebedor(recebedor);
     p.setObservacao(req.getObservacao());
-    p.setCategoria(categoria);
+    p.setGrupo(grupo);
 
     Pagamento salvo = pagamentoRepository.save(p);
 
@@ -85,19 +86,19 @@ public class PagamentoService {
     Pagamento existente = pagamentoRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("Pagamento não encontrado."));
 
-    var categoriaAntiga = existente.getCategoria();
-    if (categoriaAntiga == null) {
-      categoriaAntiga = categoriaService.resolveCategoria(null, existente.getData());
-      existente.setCategoria(categoriaAntiga);
+    Grupo grupoAntigo = existente.getGrupo();
+    if (grupoAntigo == null) {
+      grupoAntigo = grupoService.resolveGrupo(null, existente.getData());
+      existente.setGrupo(grupoAntigo);
     }
 
-    var categoriaNova = categoriaService.resolveCategoria(req.getCategoriaId(), req.getData());
+    Grupo grupoNovo = grupoService.resolveGrupo(req.getGrupoId(), req.getData());
 
     // trava tanto mês antigo quanto novo
-    fechamentoMesService.validarAberto(existente.getData(), categoriaAntiga.getId());
+    fechamentoMesService.validarAberto(existente.getData(), grupoAntigo.getId());
 
     validar(req);
-    fechamentoMesService.validarAberto(req.getData(), categoriaNova.getId());
+    fechamentoMesService.validarAberto(req.getData(), grupoNovo.getId());
 
     Pessoa pagador = pessoaRepository.findById(req.getPagadorId())
         .orElseThrow(() -> new IllegalArgumentException("Pagador não encontrado"));
@@ -114,7 +115,7 @@ public class PagamentoService {
     existente.setPagador(pagador);
     existente.setRecebedor(recebedor);
     existente.setObservacao(req.getObservacao());
-    existente.setCategoria(categoriaNova);
+    existente.setGrupo(grupoNovo);
 
     Pagamento salvo = pagamentoRepository.save(existente);
     return toResponse(salvo);
@@ -125,13 +126,13 @@ public class PagamentoService {
     Pagamento p = pagamentoRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("Pagamento não encontrado."));
 
-    var categoria = p.getCategoria();
-    if (categoria == null) {
-      categoria = categoriaService.resolveCategoria(null, p.getData());
-      p.setCategoria(categoria);
+    Grupo grupo = p.getGrupo();
+    if (grupo == null) {
+      grupo = grupoService.resolveGrupo(null, p.getData());
+      p.setGrupo(grupo);
     }
 
-    fechamentoMesService.validarAberto(p.getData(), categoria.getId());
+    fechamentoMesService.validarAberto(p.getData(), grupo.getId());
 
     pagamentoRepository.deleteById(id);
   }
@@ -150,8 +151,8 @@ public class PagamentoService {
   private PagamentoResponse toResponse(Pagamento p) {
     DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    Long categoriaId = p.getCategoria() == null ? null : p.getCategoria().getId();
-    String categoriaNome = p.getCategoria() == null ? null : p.getCategoria().getNome();
+    Long grupoId = p.getGrupo() == null ? null : p.getGrupo().getId();
+    String grupoNome = p.getGrupo() == null ? null : p.getGrupo().getNome();
 
     return new PagamentoResponse(
         p.getId(),
@@ -160,7 +161,7 @@ public class PagamentoService {
         p.getPagador().getNome(),
         p.getRecebedor().getNome(),
         p.getObservacao(),
-        categoriaId,
-        categoriaNome);
+        grupoId,
+        grupoNome);
   }
 }

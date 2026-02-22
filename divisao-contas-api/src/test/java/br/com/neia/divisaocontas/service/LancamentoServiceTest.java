@@ -1,7 +1,7 @@
 package br.com.neia.divisaocontas.service;
 
 import br.com.neia.divisaocontas.dto.LancamentoCreateRequest;
-import br.com.neia.divisaocontas.entity.Categoria;
+import br.com.neia.divisaocontas.entity.Grupo;
 import br.com.neia.divisaocontas.repository.LancamentoRateioRepository;
 import br.com.neia.divisaocontas.repository.LancamentoRepository;
 import br.com.neia.divisaocontas.repository.PessoaRepository;
@@ -36,7 +36,7 @@ class LancamentoServiceTest {
   FechamentoMesService fechamentoMesService;
 
   @Mock
-  CategoriaService categoriaService;
+  GrupoService grupoService;
 
   @Test
   void criar_quandoMesFechado_deveFalharAntesDeAcessarRepositorios() {
@@ -45,7 +45,7 @@ class LancamentoServiceTest {
         pessoaRepository,
         rateioRepository,
         fechamentoMesService,
-        categoriaService);
+        grupoService);
 
     LancamentoCreateRequest req = new LancamentoCreateRequest();
     req.setDescricao("Teste");
@@ -53,8 +53,8 @@ class LancamentoServiceTest {
     req.setValor(new BigDecimal("10.00"));
     req.setPagadorId(1L);
 
-    when(categoriaService.resolveCategoria(any(), eq(req.getData())))
-        .thenReturn(new Categoria("Mes/01"));
+    when(grupoService.resolveGrupo(any(), eq(req.getData())))
+        .thenReturn(new Grupo("Mes/01"));
 
     doThrow(new IllegalArgumentException("Este mês está fechado. Reabra para alterar."))
         .when(fechamentoMesService)
@@ -72,7 +72,7 @@ class LancamentoServiceTest {
         pessoaRepository,
         rateioRepository,
         fechamentoMesService,
-        categoriaService);
+        grupoService);
 
     LancamentoCreateRequest req = new LancamentoCreateRequest();
     req.setDescricao(null);

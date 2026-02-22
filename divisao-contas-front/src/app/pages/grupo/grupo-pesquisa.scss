@@ -1,0 +1,136 @@
+.page {
+  padding: 24px 32px;
+  background: #11182b;
+  min-height: 100vh;
+  color: #fff;
+}
+
+.breadcrumb {
+  font-size: 13px;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.card {
+  border-radius: 4px;
+  overflow: hidden;
+  background: #1a2236;
+  margin-bottom: 24px;
+}
+
+.card-header {
+  background: #3f6bff;
+  padding: 14px 20px;
+  font-weight: 500;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.filter-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 24px;
+  width: 100%;
+}
+
+.filter-field {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.form-label {
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.form-field {
+  width: 100%;
+  display: block;
+}
+
+.form-field .mat-mdc-form-field {
+  width: 100%;
+}
+
+.form-field .mat-mdc-form-field-infix {
+  width: 100%;
+  min-width: 0;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-novo {
+  background-color: #ffffff;
+  color: #0f1526;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.btn-novo:hover {
+  background-color: #f5f5f5;
+}
+
+.btn-limpar {
+  background-color: #e53935;
+  color: #ffffff;
+}
+
+.btn-limpar:hover {
+  background-color: #d32f2f;
+}
+
+.btn-pesquisar {
+  background-color: #3f6bff;
+  color: #ffffff;
+}
+
+.btn-pesquisar[disabled] {
+  background-color: rgba(63, 107, 255, 0.45);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.result-card {
+  border-radius: 4px;
+  background: #1a2236;
+}
+
+.result-header {
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  display: flex;
+  justify-content: space-between;
+}
+
+.result-row {
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.result-actions button {
+  margin-left: 4px;
+}
+
+.result-actions .icon-button mat-icon {
+  color: #ffffff !important;
+  opacity: 0.9;
+}
+
+.pagination {
+  padding: 12px 20px 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.pagination .active {
+  background: #3f6bff;
+  color: #fff;
+}

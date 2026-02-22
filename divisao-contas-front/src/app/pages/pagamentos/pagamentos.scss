@@ -1,0 +1,58 @@
+.page {
+	padding: 16px;
+	min-height: calc(100vh - 64px - 40px);
+	background: #11182b;
+	color: #ffffff;
+}
+
+.breadcrumb {
+	font-size: 13px;
+	margin-bottom: 12px;
+	color: #b0b7d1;
+}
+
+.card {
+	background: #0b1020;
+	border-radius: 8px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+	border: 1px solid #1f2940;
+}
+
+.card-header {
+	padding: 12px 16px;
+	font-size: 16px;
+	font-weight: 600;
+	background: linear-gradient(90deg, #1a2a6c, #27336b);
+	border-bottom: 1px solid #1f2940;
+}
+
+.card-body {
+	padding: 16px;
+}
+
+.form-row {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 12px;
+}
+
+.form-label {
+	font-size: 13px;
+	margin-bottom: 4px;
+	color: #d0d6f0;
+}
+
+.form-field {
+	width: 100%;
+}
+
+.card-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	margin-top: 16px;
+}
+
+.card-actions button {
+	min-width: 110px;
+}

@@ -1,0 +1,55 @@
+@use 'sass:color';
+
+.page {
+	padding: 24px 32px;
+	background: #0f1526;
+	min-height: 100vh;
+	color: #fff;
+}
+
+.breadcrumb {
+	font-size: 13px;
+	margin-bottom: 16px;
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.card {
+	border-radius: 4px;
+	overflow: hidden;
+	background: #1a2236;
+}
+
+.card-header {
+	background: #3f6bff;
+	padding: 14px 20px;
+	font-weight: 500;
+}
+
+.card-body {
+	padding: 20px;
+}
+
+.form-row {
+	display: flex;
+	flex-direction: column;
+	margin-bottom: 24px;
+}
+
+.form-label {
+	font-size: 13px;
+	margin-bottom: 6px;
+}
+
+.form-field {
+	width: 100%;
+}
+
+.card-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+}
+
+.card-actions button {
+	min-width: 100px;
+}

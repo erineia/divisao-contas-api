@@ -30,28 +30,28 @@ public class SaldoService {
   private final LancamentoRepository lancamentoRepository;
   private final LancamentoRateioRepository rateioRepository;
   private final PagamentoRepository pagamentoRepository;
-  private final CategoriaService categoriaService;
+  private final GrupoService grupoService;
 
   public SaldoService(PessoaRepository pessoaRepository,
       LancamentoRepository lancamentoRepository,
       LancamentoRateioRepository rateioRepository,
       PagamentoRepository pagamentoRepository,
-      CategoriaService categoriaService) {
+      GrupoService grupoService) {
 
     this.pessoaRepository = pessoaRepository;
     this.lancamentoRepository = lancamentoRepository;
     this.rateioRepository = rateioRepository;
     this.pagamentoRepository = pagamentoRepository;
-    this.categoriaService = categoriaService;
+    this.grupoService = grupoService;
   }
 
   @Transactional(readOnly = true)
-  public List<SaldoPessoaResponse> saldoDoMes(int ano, int mes, Long categoriaId) {
+  public List<SaldoPessoaResponse> saldoDoMes(int ano, int mes, Long grupoId) {
     LocalDate inicio = LocalDate.of(ano, mes, 1);
     LocalDate fim = inicio.plusMonths(1).minusDays(1);
 
-    var categoriaMes = (categoriaId == null) ? categoriaService.getOrCreateMes(mes) : null;
-    Long categoriaEfetivaId = (categoriaId == null) ? categoriaMes.getId() : categoriaId;
+    var grupoMes = (grupoId == null) ? grupoService.getOrCreateMes(mes) : null;
+    Long grupoEfetivoId = (grupoId == null) ? grupoMes.getId() : grupoId;
 
     List<Pessoa> pessoas = pessoaRepository.findAll();
 
@@ -69,7 +69,7 @@ public class SaldoService {
       if (l.getData().isBefore(inicio) || l.getData().isAfter(fim))
         continue;
 
-      if (!matchesCategoria(l.getCategoria(), categoriaEfetivaId, categoriaId == null))
+      if (!matchesGrupo(l.getGrupo(), grupoEfetivoId, grupoId == null))
         continue;
 
       Long pagadorId = l.getPagador().getId();
@@ -83,7 +83,7 @@ public class SaldoService {
       if (dataLanc.isBefore(inicio) || dataLanc.isAfter(fim))
         continue;
 
-      if (!matchesCategoria(r.getLancamento().getCategoria(), categoriaEfetivaId, categoriaId == null))
+      if (!matchesGrupo(r.getLancamento().getGrupo(), grupoEfetivoId, grupoId == null))
         continue;
 
       Long pessoaId = r.getPessoa().getId();
@@ -120,7 +120,7 @@ public class SaldoService {
   }
 
   @Transactional(readOnly = true)
-  public List<TransferenciaResponse> quemDeve(int ano, int mes, Long categoriaId) {
+  public List<TransferenciaResponse> quemDeve(int ano, int mes, Long grupoId) {
     if (mes < 1 || mes > 12) {
       throw new IllegalArgumentException("O mês deve estar entre 1 e 12.");
     }
@@ -129,7 +129,7 @@ public class SaldoService {
       throw new IllegalArgumentException("Ano inválido.");
     }
 
-    List<SaldoPessoaResponse> saldos = saldoDoMes(ano, mes, categoriaId);
+    List<SaldoPessoaResponse> saldos = saldoDoMes(ano, mes, grupoId);
 
     // devedores: valorDevido > 0
     List<SaldoPessoaResponse> devedores = saldos.stream()
@@ -174,7 +174,7 @@ public class SaldoService {
   }
 
   @Transactional(readOnly = true)
-  public List<SaldoPessoaResponse> saldoPorPeriodo(String dataInicio, String dataFim, Long categoriaId) {
+  public List<SaldoPessoaResponse> saldoPorPeriodo(String dataInicio, String dataFim, Long grupoId) {
     LocalDate inicio = parseDataBrOuIso(dataInicio);
     LocalDate fim = parseDataBrOuIso(dataFim);
 
@@ -201,7 +201,7 @@ public class SaldoService {
       if (data.isBefore(inicio) || data.isAfter(fim))
         continue;
 
-      if (categoriaId != null && !matchesCategoria(l.getCategoria(), categoriaId, false))
+      if (grupoId != null && !matchesGrupo(l.getGrupo(), grupoId, false))
         continue;
 
       Long pagadorId = l.getPagador().getId();
@@ -215,7 +215,7 @@ public class SaldoService {
       if (dataLanc.isBefore(inicio) || dataLanc.isAfter(fim))
         continue;
 
-      if (categoriaId != null && !matchesCategoria(r.getLancamento().getCategoria(), categoriaId, false))
+      if (grupoId != null && !matchesGrupo(r.getLancamento().getGrupo(), grupoId, false))
         continue;
 
       Long pessoaId = r.getPessoa().getId();
@@ -254,8 +254,8 @@ public class SaldoService {
   }
 
   @Transactional(readOnly = true)
-  public List<TransferenciaResponse> quemDevePeriodo(String dataInicio, String dataFim, Long categoriaId) {
-    List<SaldoPessoaResponse> saldos = saldoPorPeriodo(dataInicio, dataFim, categoriaId);
+  public List<TransferenciaResponse> quemDevePeriodo(String dataInicio, String dataFim, Long grupoId) {
+    List<SaldoPessoaResponse> saldos = saldoPorPeriodo(dataInicio, dataFim, grupoId);
 
     List<SaldoPessoaResponse> devedores = saldos.stream()
         .filter(s -> s.getValorDevido().compareTo(BigDecimal.ZERO) > 0)
@@ -297,7 +297,7 @@ public class SaldoService {
   }
 
   @Transactional(readOnly = true)
-  public List<TransferenciaResponse> acumuladoAteMes(int ateAno, int ateMes, Long categoriaId) {
+  public List<TransferenciaResponse> acumuladoAteMes(int ateAno, int ateMes, Long grupoId) {
     if (ateMes < 1 || ateMes > 12) {
       throw new IllegalArgumentException("O mês deve estar entre 1 e 12.");
     }
@@ -317,7 +317,7 @@ public class SaldoService {
       if (data.isAfter(fimMes))
         continue;
 
-      if (categoriaId != null && !matchesCategoria(r.getLancamento().getCategoria(), categoriaId, false))
+      if (grupoId != null && !matchesGrupo(r.getLancamento().getGrupo(), grupoId, false))
         continue;
 
       Long devedorId = r.getPessoa().getId();
@@ -336,7 +336,7 @@ public class SaldoService {
       if (p.getData().isAfter(fimMes))
         continue;
 
-      if (categoriaId != null && !matchesCategoria(p.getCategoria(), categoriaId, false))
+      if (grupoId != null && !matchesGrupo(p.getGrupo(), grupoId, false))
         continue;
 
       Long pagadorId = p.getPagador().getId();
@@ -372,16 +372,16 @@ public class SaldoService {
     return resp;
   }
 
-  private boolean matchesCategoria(br.com.neia.divisaocontas.entity.Categoria categoria, Long categoriaId,
-      boolean incluirSemCategoria) {
-    if (categoriaId == null)
+  private boolean matchesGrupo(br.com.neia.divisaocontas.entity.Grupo grupo, Long grupoId,
+      boolean incluirSemGrupo) {
+    if (grupoId == null)
       return true;
 
-    if (categoria != null && categoria.getId() != null) {
-      return categoriaId.equals(categoria.getId());
+    if (grupo != null && grupo.getId() != null) {
+      return grupoId.equals(grupo.getId());
     }
 
-    return incluirSemCategoria;
+    return incluirSemGrupo;
   }
 
   private LocalDate parseDataBrOuIso(String raw) {

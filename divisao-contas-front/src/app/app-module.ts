@@ -15,7 +15,7 @@ import { PessoasPesquisaComponent } from './pages/pessoas/pessoas-pesquisa';
 import { FechamentosComponent } from './pages/fechamentos/fechamentos';
 import { LancamentosComponent } from './pages/lancamentos/lancamentos';
 import { PagamentosComponent } from './pages/pagamentos/pagamentos';
-import { CategoriaComponent } from './pages/categoria/categoria';
+import { GrupoComponent } from './pages/grupo/grupo';
 import { RelatoriosComponent } from './pages/relatorios/relatorios';
 import { AuthInterceptor } from './auth/auth.interceptor';
 
@@ -38,7 +38,7 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     FechamentosComponent,
     LancamentosComponent,
     PagamentosComponent,
-    CategoriaComponent,
+    GrupoComponent,
     RelatoriosComponent,
   ],
   providers: [

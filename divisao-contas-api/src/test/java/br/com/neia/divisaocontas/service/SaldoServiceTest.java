@@ -15,41 +15,41 @@ import static org.mockito.Mockito.verifyNoInteractions;
 @ExtendWith(MockitoExtension.class)
 class SaldoServiceTest {
 
-  @Mock
-  PessoaRepository pessoaRepository;
+    @Mock
+    PessoaRepository pessoaRepository;
 
-  @Mock
-  LancamentoRepository lancamentoRepository;
+    @Mock
+    LancamentoRepository lancamentoRepository;
 
-  @Mock
-  LancamentoRateioRepository rateioRepository;
+    @Mock
+    LancamentoRateioRepository rateioRepository;
 
-  @Mock
-  PagamentoRepository pagamentoRepository;
+    @Mock
+    PagamentoRepository pagamentoRepository;
 
-  @Mock
-  CategoriaService categoriaService;
+    @Mock
+    GrupoService grupoService;
 
-  @Test
-  void quemDeve_quandoMesInvalido_deveFalharSemConsultarRepositorios() {
-    SaldoService service = new SaldoService(pessoaRepository, lancamentoRepository, rateioRepository,
-        pagamentoRepository, categoriaService);
+    @Test
+    void quemDeve_quandoMesInvalido_deveFalharSemConsultarRepositorios() {
+        SaldoService service = new SaldoService(pessoaRepository, lancamentoRepository, rateioRepository,
+                pagamentoRepository, grupoService);
 
-    assertThrows(IllegalArgumentException.class, () -> service.quemDeve(2026, 0, null));
+        assertThrows(IllegalArgumentException.class, () -> service.quemDeve(2026, 0, null));
 
-    verifyNoInteractions(pessoaRepository, lancamentoRepository, rateioRepository, pagamentoRepository,
-        categoriaService);
-  }
+        verifyNoInteractions(pessoaRepository, lancamentoRepository, rateioRepository, pagamentoRepository,
+                grupoService);
+    }
 
-  @Test
-  void saldoPorPeriodo_quandoDataFimAntesDaInicio_deveFalharSemConsultarRepositorios() {
-    SaldoService service = new SaldoService(pessoaRepository, lancamentoRepository, rateioRepository,
-        pagamentoRepository, categoriaService);
+    @Test
+    void saldoPorPeriodo_quandoDataFimAntesDaInicio_deveFalharSemConsultarRepositorios() {
+        SaldoService service = new SaldoService(pessoaRepository, lancamentoRepository, rateioRepository,
+                pagamentoRepository, grupoService);
 
-    assertThrows(IllegalArgumentException.class,
-        () -> service.saldoPorPeriodo("2026-01-10", "2026-01-01", null));
+        assertThrows(IllegalArgumentException.class,
+                () -> service.saldoPorPeriodo("2026-01-10", "2026-01-01", null));
 
-    verifyNoInteractions(pessoaRepository, lancamentoRepository, rateioRepository, pagamentoRepository,
-        categoriaService);
-  }
+        verifyNoInteractions(pessoaRepository, lancamentoRepository, rateioRepository, pagamentoRepository,
+                grupoService);
+    }
 }

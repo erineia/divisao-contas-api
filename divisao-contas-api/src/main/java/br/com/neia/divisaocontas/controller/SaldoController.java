@@ -24,8 +24,8 @@ public class SaldoController {
   public List<SaldoPessoaResponse> saldoDoMes(
       @RequestParam int ano,
       @RequestParam int mes,
-      @RequestParam(required = false) Long categoriaId) {
-    return saldoService.saldoDoMes(ano, mes, categoriaId);
+      @RequestParam(required = false, name = "grupoId") Long grupoId) {
+    return saldoService.saldoDoMes(ano, mes, grupoId);
   }
 
   @GetMapping("/quem-deve")
@@ -33,24 +33,24 @@ public class SaldoController {
   public List<TransferenciaResponse> quemDeve(
       @RequestParam int ano,
       @RequestParam int mes,
-      @RequestParam(required = false) Long categoriaId) {
-    return saldoService.quemDeve(ano, mes, categoriaId);
+      @RequestParam(required = false, name = "grupoId") Long grupoId) {
+    return saldoService.quemDeve(ano, mes, grupoId);
   }
 
   @GetMapping("/periodo")
   @Operation(summary = "Saldo por período", description = "Aceita datas em yyyy-MM-dd ou dd/MM/yyyy.")
   public List<SaldoPessoaResponse> saldoPorPeriodo(@RequestParam String dataInicio,
       @RequestParam String dataFim,
-      @RequestParam(required = false) Long categoriaId) {
-    return saldoService.saldoPorPeriodo(dataInicio, dataFim, categoriaId);
+      @RequestParam(required = false, name = "grupoId") Long grupoId) {
+    return saldoService.saldoPorPeriodo(dataInicio, dataFim, grupoId);
   }
 
   @GetMapping("/quem-deve/periodo")
   @Operation(summary = "Quem deve (período)", description = "Gera transferências sugeridas para quitar o saldo no período.")
   public List<TransferenciaResponse> quemDevePeriodo(@RequestParam String dataInicio,
       @RequestParam String dataFim,
-      @RequestParam(required = false) Long categoriaId) {
-    return saldoService.quemDevePeriodo(dataInicio, dataFim, categoriaId);
+      @RequestParam(required = false, name = "grupoId") Long grupoId) {
+    return saldoService.quemDevePeriodo(dataInicio, dataFim, grupoId);
   }
 
   @GetMapping("/acumulado")
@@ -58,7 +58,7 @@ public class SaldoController {
   public List<TransferenciaResponse> acumuladoAteMes(
       @RequestParam int ateAno,
       @RequestParam int ateMes,
-      @RequestParam(required = false) Long categoriaId) {
-    return saldoService.acumuladoAteMes(ateAno, ateMes, categoriaId);
+      @RequestParam(required = false, name = "grupoId") Long grupoId) {
+    return saldoService.acumuladoAteMes(ateAno, ateMes, grupoId);
   }
 }

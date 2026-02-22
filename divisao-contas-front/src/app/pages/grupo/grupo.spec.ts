@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GrupoComponent } from '../grupo/grupo';
 
-describe('GrupoComponentAlias', () => {
+import { GrupoComponent } from './grupo';
+
+describe('GrupoComponent', () => {
   let component: GrupoComponent;
   let fixture: ComponentFixture<GrupoComponent>;
 

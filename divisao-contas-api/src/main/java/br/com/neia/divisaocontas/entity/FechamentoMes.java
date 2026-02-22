@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "fechamento_mes_categoria", uniqueConstraints = @UniqueConstraint(columnNames = { "categoria_id", "ano",
+@Table(name = "fechamento_mes_grupo", uniqueConstraints = @UniqueConstraint(columnNames = { "grupo_id", "ano",
     "mes" }))
 public class FechamentoMes {
 
@@ -17,8 +17,8 @@ public class FechamentoMes {
   private int mes;
 
   @ManyToOne(optional = false)
-  @JoinColumn(name = "categoria_id", nullable = false)
-  private Categoria categoria;
+  @JoinColumn(name = "grupo_id", nullable = false)
+  private Grupo grupo;
 
   private LocalDateTime dataFechamento;
 
@@ -27,10 +27,10 @@ public class FechamentoMes {
   public FechamentoMes() {
   }
 
-  public FechamentoMes(int ano, int mes, Categoria categoria, String observacao) {
+  public FechamentoMes(int ano, int mes, Grupo grupo, String observacao) {
     this.ano = ano;
     this.mes = mes;
-    this.categoria = categoria;
+    this.grupo = grupo;
     this.observacao = observacao;
     this.dataFechamento = LocalDateTime.now();
   }
@@ -47,8 +47,8 @@ public class FechamentoMes {
     return mes;
   }
 
-  public Categoria getCategoria() {
-    return categoria;
+  public Grupo getGrupo() {
+    return grupo;
   }
 
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
@@ -60,8 +60,8 @@ public class FechamentoMes {
     return observacao;
   }
 
-  public void setCategoria(Categoria categoria) {
-    this.categoria = categoria;
+  public void setGrupo(Grupo grupo) {
+    this.grupo = grupo;
   }
 
   public void setObservacao(String observacao) {

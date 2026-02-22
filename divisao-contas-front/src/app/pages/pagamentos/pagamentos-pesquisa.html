@@ -1,0 +1,107 @@
+<div class="page">
+  <div class="breadcrumb">
+    Pagamentos >> Pesquisar Pagamentos
+  </div>
+
+  <div class="card">
+    <div class="card-header">Filtro</div>
+    <div class="card-body">
+      <form [formGroup]="form" (ngSubmit)="pesquisar()">
+        <div class="filter-row">
+          <div class="filter-field">
+            <label class="form-label" for="dataInicio">Data Início</label>
+            <mat-form-field appearance="fill" class="form-field">
+              <input
+                matInput
+                id="dataInicio"
+                type="date"
+                formControlName="dataInicio"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="filter-field">
+            <label class="form-label" for="dataFim">Data Fim</label>
+            <mat-form-field appearance="fill" class="form-field">
+              <input
+                matInput
+                id="dataFim"
+                type="date"
+                formControlName="dataFim"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="filter-field">
+            <label class="form-label" for="pagadorFiltro">Pagador</label>
+            <mat-form-field appearance="fill" class="form-field">
+              <input
+                matInput
+                id="pagadorFiltro"
+                type="text"
+                formControlName="pagador"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="filter-field">
+            <label class="form-label" for="recebedorFiltro">Recebedor</label>
+            <mat-form-field appearance="fill" class="form-field">
+              <input
+                matInput
+                id="recebedorFiltro"
+                type="text"
+                formControlName="recebedor"
+              />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="filter-actions">
+          <button mat-stroked-button color="primary" type="button" (click)="limpar()">
+            Limpar
+          </button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="carregando">
+            Pesquisar
+          </button>
+          <button mat-flat-button color="accent" type="button" (click)="novo()">
+            Novo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="result-card" *ngIf="pagamentosFiltrados.length > 0">
+    <div class="result-header">
+      <div class="col data">Data</div>
+      <div class="col valor">Valor</div>
+      <div class="col pagador">Pagador</div>
+      <div class="col recebedor">Recebedor</div>
+      <div class="col grupo">Grupo</div>
+      <div class="col observacao">Observação</div>
+      <div class="col acao">Ações</div>
+    </div>
+
+    <div class="result-row" *ngFor="let pagamento of pagamentosFiltrados">
+      <div class="col data">{{ pagamento.data }}</div>
+      <div class="col valor">{{ pagamento.valor | currency: 'BRL' }}</div>
+      <div class="col pagador">{{ pagamento.pagador }}</div>
+      <div class="col recebedor">{{ pagamento.recebedor }}</div>
+      <div class="col grupo">{{ pagamento.grupoNome || '-' }}</div>
+      <div class="col observacao">{{ pagamento.observacao || '-' }}</div>
+      <div class="col acao">
+        <button mat-icon-button color="primary" (click)="editar(pagamento)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="excluir(pagamento)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sem-registros" *ngIf="!carregando && pagamentosFiltrados.length === 0">
+    Nenhum pagamento encontrado.
+  </div>
+</div>

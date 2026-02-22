@@ -12,6 +12,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 
 const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -25,6 +27,8 @@ const MATERIAL_MODULES = [
   MatExpansionModule,
   MatSnackBarModule,
   MatDialogModule,
+  MatSelectModule,
+  MatOptionModule,
   MatIconModule,
   MatButtonModule,
 ];

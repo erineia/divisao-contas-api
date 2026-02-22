@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({ "id", "descricao", "data", "valor", "categoriaId", "categoriaNome", "divide", "pagador",
+@JsonPropertyOrder({ "id", "descricao", "data", "valor", "grupoId", "grupoNome", "divide", "pagador",
     "participantes", "devedores" })
 public class LancamentoResponse {
   private Long id;
@@ -18,9 +18,9 @@ public class LancamentoResponse {
 
   private BigDecimal valor;
 
-  private Long categoriaId;
+  private Long grupoId;
 
-  private String categoriaNome;
+  private String grupoNome;
 
   private boolean divide;
 
@@ -49,12 +49,12 @@ public class LancamentoResponse {
     return valor;
   }
 
-  public Long getCategoriaId() {
-    return categoriaId;
+  public Long getGrupoId() {
+    return grupoId;
   }
 
-  public String getCategoriaNome() {
-    return categoriaNome;
+  public String getGrupoNome() {
+    return grupoNome;
   }
 
   public boolean isDivide() {
@@ -89,12 +89,12 @@ public class LancamentoResponse {
     this.valor = valor;
   }
 
-  public void setCategoriaId(Long categoriaId) {
-    this.categoriaId = categoriaId;
+  public void setGrupoId(Long grupoId) {
+    this.grupoId = grupoId;
   }
 
-  public void setCategoriaNome(String categoriaNome) {
-    this.categoriaNome = categoriaNome;
+  public void setGrupoNome(String grupoNome) {
+    this.grupoNome = grupoNome;
   }
 
   public void setDivide(boolean divide) {

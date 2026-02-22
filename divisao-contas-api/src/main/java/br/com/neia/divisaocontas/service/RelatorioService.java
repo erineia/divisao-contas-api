@@ -29,26 +29,26 @@ public class RelatorioService {
   private static final DateTimeFormatter DATA_BR = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
   private final SaldoService saldoService;
-  private final CategoriaService categoriaService;
+  private final GrupoService grupoService;
   private final LancamentoRepository lancamentoRepository;
   private final LancamentoRateioRepository rateioRepository;
   private final PagamentoRepository pagamentoRepository;
 
   public RelatorioService(SaldoService saldoService,
-      CategoriaService categoriaService,
+      GrupoService grupoService,
       LancamentoRepository lancamentoRepository,
       LancamentoRateioRepository rateioRepository,
       PagamentoRepository pagamentoRepository) {
 
     this.saldoService = saldoService;
-    this.categoriaService = categoriaService;
+    this.grupoService = grupoService;
     this.lancamentoRepository = lancamentoRepository;
     this.rateioRepository = rateioRepository;
     this.pagamentoRepository = pagamentoRepository;
   }
 
   @Transactional(readOnly = true)
-  public CsvResult relatorioMensalCsv(int ano, int mes, Long categoriaId) {
+  public CsvResult relatorioMensalCsv(int ano, int mes, Long grupoId) {
     validarMesAno(ano, mes);
 
     String mesAno = String.format("%02d/%d", mes, ano);
@@ -56,25 +56,25 @@ public class RelatorioService {
     LocalDate inicio = LocalDate.of(ano, mes, 1);
     LocalDate fim = inicio.plusMonths(1).minusDays(1);
 
-    final Long categoriaEfetivaId = (categoriaId != null)
-        ? categoriaId
-        : categoriaService.getOrCreateMes(mes).getId();
+    final Long grupoEfetivoId = (grupoId != null)
+        ? grupoId
+        : grupoService.getOrCreateMes(mes).getId();
 
     List<Lancamento> lancamentosMes = lancamentoRepository.findAll()
         .stream()
         .filter(l -> !l.getData().isBefore(inicio) && !l.getData().isAfter(fim))
-        .filter(l -> l.getCategoria() != null && categoriaEfetivaId.equals(l.getCategoria().getId()))
+        .filter(l -> l.getGrupo() != null && grupoEfetivoId.equals(l.getGrupo().getId()))
         .sorted(Comparator.comparing(Lancamento::getData))
         .toList();
 
     List<Pagamento> pagamentosMes = pagamentoRepository.findAll()
         .stream()
         .filter(p -> !p.getData().isBefore(inicio) && !p.getData().isAfter(fim))
-        .filter(p -> p.getCategoria() != null && categoriaEfetivaId.equals(p.getCategoria().getId()))
+        .filter(p -> p.getGrupo() != null && grupoEfetivoId.equals(p.getGrupo().getId()))
         .sorted(Comparator.comparing(Pagamento::getData))
         .toList();
 
-    List<TransferenciaResponse> quemDeveAcumulado = saldoService.acumuladoAteMes(ano, mes, categoriaEfetivaId);
+    List<TransferenciaResponse> quemDeveAcumulado = saldoService.acumuladoAteMes(ano, mes, grupoEfetivoId);
 
     BigDecimal totalPagoMes = pagamentosMes.stream()
         .map(Pagamento::getValor)

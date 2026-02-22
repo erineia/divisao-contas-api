@@ -20,7 +20,7 @@ public class LancamentoCreateRequest {
   @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
   private Long pagadorId;
 
-  private Long categoriaId;
+  private Long grupoId;
 
   private boolean divide;
 
@@ -44,10 +44,6 @@ public class LancamentoCreateRequest {
     return pagadorId;
   }
 
-  public Long getCategoriaId() {
-    return categoriaId;
-  }
-
   public void setDescricao(String descricao) {
     this.descricao = descricao;
   }
@@ -64,8 +60,12 @@ public class LancamentoCreateRequest {
     this.pagadorId = pagadorId;
   }
 
-  public void setCategoriaId(Long categoriaId) {
-    this.categoriaId = categoriaId;
+  public Long getGrupoId() {
+    return grupoId;
+  }
+
+  public void setGrupoId(Long grupoId) {
+    this.grupoId = grupoId;
   }
 
   public boolean isDivide() {

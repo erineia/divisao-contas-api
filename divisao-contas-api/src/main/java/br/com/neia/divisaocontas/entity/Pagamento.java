@@ -25,7 +25,7 @@ public class Pagamento {
   private Pessoa recebedor;
 
   @ManyToOne
-  private Categoria categoria;
+  private Grupo grupo;
 
   private String observacao;
 
@@ -65,12 +65,12 @@ public class Pagamento {
     this.recebedor = recebedor;
   }
 
-  public Categoria getCategoria() {
-    return categoria;
+  public Grupo getGrupo() {
+    return grupo;
   }
 
-  public void setCategoria(Categoria categoria) {
-    this.categoria = categoria;
+  public void setGrupo(Grupo grupo) {
+    this.grupo = grupo;
   }
 
   public String getObservacao() {

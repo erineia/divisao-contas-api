@@ -61,12 +61,12 @@ class SaldoAcumuladoComPagamentoIT {
     PessoaCriada natalia = criaPessoa("Natalia");
     PessoaCriada neia = criaPessoa("Neia");
 
-    // Usa uma categoria explícita para acumular entre meses dentro do mesmo
+    // Usa um grupo explícito para acumular entre meses dentro do mesmo
     // "projeto"
-    String categoriaNome = "ProjetoSaldo-" + UUID.randomUUID();
-    int categoriaId = auth().contentType(ContentType.JSON)
-        .body("{\"nome\":\"" + categoriaNome + "\"}")
-        .when().post("/api/categorias")
+    String grupoNome = "ProjetoSaldo-" + UUID.randomUUID();
+    int grupoId = auth().contentType(ContentType.JSON)
+        .body("{\"nome\":\"" + grupoNome + "\"}")
+        .when().post("/api/grupos")
         .then().statusCode(201)
         .extract().path("id");
 
@@ -77,13 +77,13 @@ class SaldoAcumuladoComPagamentoIT {
           "data": "2099-04-10",
           "valor": 500,
           "pagadorId": %d,
-          "categoriaId": %d,
+          "grupoId": %d,
           "divide": false,
           "devedores": [
             { "pessoaId": %d, "valor": 500 }
           ]
         }
-        """.formatted(natalia.id(), categoriaId, neia.id());
+        """.formatted(natalia.id(), grupoId, neia.id());
 
     auth().contentType(ContentType.JSON)
         .body(lancJan)
@@ -92,7 +92,7 @@ class SaldoAcumuladoComPagamentoIT {
 
     // 2) Consulta acumulado em Janeiro (Neia deve 500 para Natalia)
     // endpoint retorna TransferenciaResponse: [{devedor, credor, valor}]
-    String bodyJan = getJson("/api/saldos/acumulado?ateAno=2099&ateMes=4&categoriaId=" + categoriaId);
+    String bodyJan = getJson("/api/saldos/acumulado?ateAno=2099&ateMes=4&grupoId=" + grupoId);
     assertTransferencia(bodyJan, neia.nome(), natalia.nome(), new BigDecimal("500.00"));
 
     // 3) Fevereiro: Neia paga 600 para Natalia (quita 500 e sobra 100)
@@ -103,9 +103,9 @@ class SaldoAcumuladoComPagamentoIT {
           "valor": 600,
           "pagadorId": %d,
           "recebedorId": %d,
-          "categoriaId": %d
+          "grupoId": %d
         }
-        """.formatted(neia.id(), natalia.id(), categoriaId);
+        """.formatted(neia.id(), natalia.id(), grupoId);
 
     auth().contentType(ContentType.JSON)
         .body(pagFev)
@@ -115,7 +115,7 @@ class SaldoAcumuladoComPagamentoIT {
     // 4) Consulta acumulado em Fevereiro:
     // pagou 600, devia 500 => zera a dívida Neia->Natalia e cria crédito invertido
     // Natalia->Neia de 100
-    String bodyFev = getJson("/api/saldos/acumulado?ateAno=2099&ateMes=5&categoriaId=" + categoriaId);
+    String bodyFev = getJson("/api/saldos/acumulado?ateAno=2099&ateMes=5&grupoId=" + grupoId);
     assertTransferencia(bodyFev, natalia.nome(), neia.nome(), new BigDecimal("100.00"));
   }
 
