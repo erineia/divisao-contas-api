@@ -57,14 +57,17 @@ export class PagamentosPesquisaComponent implements OnInit {
     if (!pagamento?.id) return;
 
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '360px',
-      data: {
-        title: 'Confirmação',
-        message: `Deseja realmente excluir o pagamento de ${pagamento.pagador} para ${pagamento.recebedor} em ${pagamento.data}?`,
-        confirmLabel: 'Excluir',
-        cancelLabel: 'Cancelar',
-      },
-    });
+  panelClass: 'confirm-dialog-panel',
+  width: 'min(420px, 92vw)',
+  maxWidth: '92vw',
+  autoFocus: false,
+  data: {
+    title: 'Confirmação',
+    message: `Deseja realmente excluir o pagamento de ${pagamento.pagador} para ${pagamento.recebedor} em ${pagamento.data}?`,
+    confirmLabel: 'Excluir',
+    cancelLabel: 'Cancelar',
+  },
+});
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (!confirmed) return;

@@ -1,0 +1,94 @@
+/* ============================
+   TOOLBAR (NAVBAR)
+   ============================ */
+mat-toolbar.mat-toolbar {
+  background: #050814 !important;
+  color: #fff !important;
+  border-bottom: 1px solid #141b2d;
+}
+
+/* ============================
+   SIDENAV
+   ============================ */
+mat-sidenav,
+.mat-drawer {
+  background: #050814 !important;
+  color: #fff !important;
+}
+
+.mat-drawer-inner-container {
+  background: #050814 !important;
+}
+
+.mat-drawer-content {
+  background: #0f1526 !important;
+}
+
+/* ============================
+   EXPANSION PANEL (MENU)
+   ============================ */
+.mat-expansion-panel,
+.mat-expansion-panel-header {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: #fff !important;
+}
+
+.mat-expansion-panel-header:hover,
+.mat-expansion-panel-header.mat-expanded {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* ============================
+   INPUT / SELECT - MODELO “TRIBUNAL” (flat, fundo único)
+   ============================ */
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+/* tira overlay que cria “sombra” */
+.mat-mdc-form-field-focus-overlay {
+  opacity: 0 !important;
+}
+
+/* remove state-layer/ripple interno */
+.mdc-text-field__state-layer,
+.mdc-text-field__ripple {
+  display: none !important;
+}
+
+/* ✅ fundo ÚNICO aplicado no container correto */
+.mat-mdc-text-field-wrapper {
+  background: rgba(255, 255, 255, 0.06) !important; /* igual ao print */
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+/* garante que não existe “segunda caixa” dentro */
+.mat-mdc-form-field-flex,
+.mdc-text-field__background {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* outline discreto (não grosso) */
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: rgba(255, 255, 255, 0.12);
+  --mdc-outlined-text-field-hover-outline-color: rgba(255, 255, 255, 0.20);
+  --mdc-outlined-text-field-focus-outline-color: #3f6bff;
+
+  --mdc-outlined-text-field-input-text-color: #ffffff;
+  --mdc-outlined-text-field-label-text-color: rgba(255, 255, 255, 0.75);
+}
+
+/* placeholder */
+::placeholder,
+.mat-mdc-select-placeholder {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+/* texto do select */
+.mat-mdc-select-value {
+  color: #fff !important;
+}

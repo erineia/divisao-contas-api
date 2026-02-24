@@ -1,0 +1,108 @@
+
+/* ===== Filtros ===== */
+.filter-row {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  width: 100%;
+
+@media (max-width: 1100px) {
+  .filter-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .filter-row { grid-template-columns: 1fr; }
+}
+
+.filter-field {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  padding-bottom: 2px;
+}
+
+/* ===== Tabela de resultados (Lançamentos) ===== */
+.lancamentos-table {
+  width: 100%;
+}
+
+.lancamentos-table .result-header,
+.lancamentos-table .result-row {
+  display: grid;
+  align-items: center;
+  grid-template-columns: 140px 150px 1.4fr 1.4fr 1.2fr 110px;
+  column-gap: 32px;
+  padding: 16px 22px;
+}
+
+.lancamentos-table .result-header {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.lancamentos-table .col.valor {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.lancamentos-table .col.acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.lancamentos-table .col.descricao,
+.lancamentos-table .col.grupo {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+  .lancamentos-table .result-header,
+  .lancamentos-table .result-row {
+    grid-template-columns: 120px 110px 1fr 1fr 90px 90px;
+  }
+  .lancamentos-table .col.grupo {
+    display: none;
+  }
+}
+
+.empty-msg {
+  text-align: center;
+  color: #888;
+  margin-top: 24px;
+}
+
+.header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.btn-novo {
+  min-width: 110px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+}
+/* mantém tudo igual ao pagamento; só ajusta larguras das colunas se precisar */
+.lancamentos-table .col.data { width: 120px; }
+.lancamentos-table .col.valor { width: 140px; }
+.lancamentos-table .col.descricao { flex: 1; min-width: 280px; }
+.lancamentos-table .col.grupo { width: 220px; }
+.lancamentos-table .col.acoes { width: 120px; justify-content: flex-end; }

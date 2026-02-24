@@ -1,15 +1,13 @@
 @use '@angular/material' as mat;
+@use "./styles/index";
 
-// 1) Obrigatório
 @include mat.core();
 
-// 2) Paletas (iguais ao tema indigo/pink da docs)
-$primary: mat.m2-define-palette(mat.$m2-indigo-palette);
-$accent: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
+$primary: mat.m2-define-palette(mat.$m2-indigo-palette, 900);
+$accent: mat.m2-define-palette(mat.$m2-blue-palette, 600);
 $warn: mat.m2-define-palette(mat.$m2-red-palette);
 
-// 3) Tema
-$theme: mat.m2-define-light-theme((
+$theme: mat.m2-define-dark-theme((
   color: (
     primary: $primary,
     accent: $accent,
@@ -17,17 +15,29 @@ $theme: mat.m2-define-light-theme((
   ),
 ));
 
-// 4) Aplicar tema em TODOS os componentes do Material
 @include mat.all-component-themes($theme);
 
-// Básico de layout
 html, body {
   height: 100%;
   margin: 0;
-  /* azul bem escuro usado nas páginas internas */
   background-color: #0f1526;
 }
+
 body {
   font-family: Roboto, "Helvetica Neue", sans-serif;
   color: #fff;
+}
+.mat-mdc-text-field-wrapper,
+.mdc-text-field,
+.mdc-text-field__background {
+  box-shadow: none !important;
+  background-image: none !important;
+}
+
+.mdc-text-field--outlined::before,
+.mdc-text-field--outlined::after,
+.mdc-text-field--filled::before,
+.mdc-text-field--filled::after {
+  display: none !important;
+  content: none !important;
 }

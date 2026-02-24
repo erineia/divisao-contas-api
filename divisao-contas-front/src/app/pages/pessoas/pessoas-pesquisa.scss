@@ -1,114 +1,95 @@
-.page {
-  padding: 24px 32px;
-  background: #11182b; /* um pouco mais claro que o menu lateral */
-  min-height: 100vh;
-  color: #fff;
-}
+/* ====== FILTRO (input em cima + botões embaixo) ====== */
 
-.breadcrumb {
-  font-size: 13px;
-  margin-bottom: 16px;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.card {
-  border-radius: 4px;
-  overflow: hidden;
-  background: #1a2236;
-  margin-bottom: 24px;
-}
-
-.card-header {
-  background: #3f6bff;
-  padding: 14px 20px;
-  font-weight: 500;
-}
-
-.card-body {
-  padding: 20px;
-}
-
-.filter-row {
+/* garante que filter-row e filter-actions fiquem um abaixo do outro */
+form {
   display: flex;
-  /* deixa o campo crescer ocupando o espaço e mantém os botões à direita */
-  justify-content: flex-start;
-  align-items: flex-end;
-  gap: 24px;
+  flex-direction: column;
+}
+
+/* linha do campo: ocupa 100% */
+.filter-row {
+  display: grid;
+  grid-template-columns: 1fr; /* só 1 coluna (o campo) */
+  gap: 16px;
   width: 100%;
 }
 
 .filter-field {
-  flex: 1 1 auto;
   width: 100%;
 }
 
-.form-label {
-  font-size: 13px;
-  margin-bottom: 6px;
-}
-
-.form-field {
-  /* garante que o mat-form-field ocupe toda a largura disponível */
-  width: 100%;
-  display: block;
-}
-
-/* Força os elementos internos do Angular Material a não limitarem a largura em ~180px */
-.form-field .mat-mdc-form-field {
-  width: 100%;
-}
-
-.form-field .mat-mdc-form-field-infix {
-  width: 100%;
-  min-width: 0;
-}
-
+/* ações abaixo: Novo à esquerda | Limpar/Pesquisar à direita */
 .filter-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end; /* joga tudo para a direita */
+  gap: 12px;
+  width: 100%;
+}
+
+.actions-left {
   display: flex;
   gap: 12px;
 }
 
-/* Botão "Novo" branco sobre fundo escuro */
+.actions-right {
+  display: flex;
+  gap: 12px;
+}
+
+/* ====== BOTÕES (padrão) ====== */
+.btn-custom {
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  border: 0;
+  cursor: pointer;
+}
+
+/* NOVO branco (preenchido) */
 .btn-novo {
-  background-color: #ffffff;
-  color: #0f1526;
-  border-color: rgba(255, 255, 255, 0.2);
+  background: #ffffff !important;
+  color: #050814 !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
 }
 
 .btn-novo:hover {
-  background-color: #f5f5f5;
+  background: #f2f4ff !important;
 }
 
-/* Botão "Limpar" mantém o vermelho, só dá um pouco mais de contraste */
+/* LIMPAR vermelho */
 .btn-limpar {
-  background-color: #e53935;
-  color: #ffffff;
+  background: #e53935 !important;
+  color: #ffffff !important;
 }
 
 .btn-limpar:hover {
-  background-color: #d32f2f;
+  background: #d32f2f !important;
 }
 
-/* Botão "Pesquisar" com o mesmo azul claro do cabeçalho "Consultar Pessoa" */
+/* PESQUISAR azul */
 .btn-pesquisar {
-  background-color: #3f6bff;
-  color: #ffffff;
+  background: #3f6bff !important;
+  color: #ffffff !important;
 }
 
-.btn-pesquisar[disabled] {
-  background-color: rgba(63, 107, 255, 0.45);
-  color: rgba(255, 255, 255, 0.8);
+.btn-pesquisar:hover {
+  filter: brightness(1.05);
 }
+
+/* ====== RESULTADOS (mantive seus estilos e só dei uma “organizada”) ====== */
 
 .result-card {
-  border-radius: 4px;
-  background: #1a2236;
+  border-radius: 10px;
+  background: #0b1020;
+  border: 1px solid #1f2940;
+  overflow: hidden;
 }
 
 .result-header {
   padding: 14px 20px;
-  /* linha mais clara entre cabeçalho e primeira linha */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   justify-content: space-between;
 }
@@ -118,15 +99,13 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  /* linhas divisórias mais brancas/visíveis */
-  border-top: 1px solid rgba(255, 255, 255, 0.22);
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
 }
 
 .result-actions button {
   margin-left: 4px;
 }
 
-/* Ícones de ação em branco, mesmo quando o botão está desabilitado */
 .result-actions .icon-button mat-icon {
   color: #ffffff !important;
   opacity: 0.9;

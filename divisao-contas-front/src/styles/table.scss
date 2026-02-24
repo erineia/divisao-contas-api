@@ -1,0 +1,118 @@
+.result-card {
+  margin-top: 14px;
+  border-radius: 10px;
+  border: 1px solid #1f2940;
+  overflow: hidden;
+  background: #0b1020;
+}
+
+.result-header,
+.result-row {
+  display: grid;
+  grid-template-columns: 140px 130px 1.3fr 1.3fr 1fr 110px;
+  column-gap: 22px;
+  padding: 12px 14px;
+  align-items: center;
+}
+
+.result-header {
+  background: #151d35;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: #d7e0ff;
+  border-bottom: 1px solid rgba(31, 41, 64, 0.9);
+}
+
+.result-row:nth-child(odd) { background: #090f1f; }
+.result-row:nth-child(even) { background: #0f1627; }
+
+.col.valor {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.col.data,
+.col.pagador,
+.col.recebedor,
+.col.grupo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.col.acao {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .result-header,
+  .result-row {
+    grid-template-columns: 120px 110px 1fr 1fr 110px;
+    column-gap: 14px;
+  }
+  .col.grupo { display: none; }
+}
+
+.sem-registros {
+  margin-top: 14px;
+  text-align: center;
+  color: #b0b7d1;
+}
+/* ===== Tabela Pagamentos (grid com espaçamento melhor) ===== */
+
+.pagamentos-table {
+  margin-top: 14px;
+  border-radius: 10px;
+  border: 1px solid #1f2940;
+  overflow: hidden;
+  background: #0b1020;
+}
+
+.pagamentos-table .result-header,
+.pagamentos-table .result-row {
+  display: grid;
+  grid-template-columns: 140px 120px 1.2fr 1.2fr 1.3fr 120px; /* Data, Valor, Pagador, Recebedor, Grupo, Ações */
+  column-gap: 24px;
+  padding: 14px 16px;
+  align-items: center;
+}
+
+.pagamentos-table .result-header {
+  background: #151d35;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: #d7e0ff;
+  border-bottom: 1px solid rgba(31, 41, 64, 0.9);
+}
+
+.pagamentos-table .result-row:nth-child(odd) { background: #090f1f; }
+.pagamentos-table .result-row:nth-child(even) { background: #0f1627; }
+
+.pagamentos-table .col {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pagamentos-table .col.valor {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.pagamentos-table .col.acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* responsivo */
+@media (max-width: 1000px) {
+  .pagamentos-table .result-header,
+  .pagamentos-table .result-row {
+    grid-template-columns: 120px 110px 1fr 1fr 110px;
+    column-gap: 14px;
+  }
+  .pagamentos-table .col.grupo { display: none; }
+}

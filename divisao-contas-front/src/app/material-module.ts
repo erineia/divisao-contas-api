@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 
-// Angular Material modules mais comuns usados no layout e formulários
+// Angular Material modules usados no layout e formulários
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +14,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -29,8 +32,9 @@ const MATERIAL_MODULES = [
   MatDialogModule,
   MatSelectModule,
   MatOptionModule,
-  MatIconModule,
-  MatButtonModule,
+  MatDatepickerModule,
+  MatNativeDateModule,
+  MatProgressSpinnerModule, // ✅ ADICIONADO
 ];
 
 @NgModule({

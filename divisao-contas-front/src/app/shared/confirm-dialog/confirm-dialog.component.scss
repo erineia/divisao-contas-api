@@ -1,49 +1,78 @@
-.dialog-container {
-  padding: 20px 26px 18px;
+.dialog-container{
+  padding: 24px;
   background: #232a3d;
   color: #fff;
-  min-width: 360px;
-  max-width: 100%;
-  border-radius: 8px;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.45), 0 10px 10px rgba(0, 0, 0, 0.35);
-  border: 1px solid #3f6bff;
-}
 
-/* remove barra de rolagem interna da modal */
-:host ::ng-deep .mat-mdc-dialog-surface {
-  overflow-x: hidden !important;
-  overflow-y: visible;
+  width: 100%;
+  box-sizing: border-box;
+
+  border-radius: 14px;
+  border: 1px solid rgba(63, 107, 255, 0.4);
+  box-shadow: 0 20px 40px rgba(0,0,0,.5), 0 8px 16px rgba(0,0,0,.35);
+}
+.dialog-message{
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+/* animação suave */
+@keyframes dialogFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .dialog-title {
-  margin: 0 0 10px;
-  font-size: 18px;
+  margin: 0 0 14px;
+  font-size: 20px;
   font-weight: 600;
+  color: #ffffff;
 }
 
 .dialog-message {
-  margin: 0 0 18px;
+  margin: 0 0 22px;
   font-size: 14px;
-  line-height: 1.5;
-  color: #d7e0ff;
+  line-height: 1.6;
+  color: #cfd8ff;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .dialog-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
 }
 
+/* botão confirmar */
 .btn-yes {
-  background-color: #4caf50; /* verde */
+  background: linear-gradient(135deg, #4caf50, #43a047);
   color: #fff;
+  border-radius: 8px;
+  padding: 6px 18px;
+  font-weight: 500;
+  transition: 0.2s ease;
 }
 
 .btn-yes:hover {
-  background-color: #43a047;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
 }
 
+/* botão cancelar */
 .btn-no {
-  /* usa o vermelho do color="warn" e só garante texto branco */
+  background: #394063;
   color: #fff;
+  border-radius: 8px;
+  padding: 6px 18px;
+  transition: 0.2s ease;
+}
+
+.btn-no:hover {
+  background: #4a5175;
 }

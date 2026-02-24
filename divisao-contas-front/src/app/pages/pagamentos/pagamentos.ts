@@ -19,6 +19,7 @@ import { GrupoResponse, GrupoService } from '../grupo/grupo.service';
 export class PagamentosComponent implements OnInit {
   form: FormGroup;
   salvando = false;
+	submitted = false;
   modoEdicao = false;
   pagamentoId: number | null = null;
 
@@ -26,6 +27,7 @@ export class PagamentosComponent implements OnInit {
   grupos: GrupoResponse[] = [];
 
   private pagamentoEdicaoState: PagamentoResponse | null = null;
+  
 
   constructor(
     private fb: FormBuilder,
@@ -38,11 +40,11 @@ export class PagamentosComponent implements OnInit {
   ) {
     this.form = this.fb.group({
       data: ['', [Validators.required]],
-      valor: [null, [Validators.required, Validators.min(0.01)]],
+			valor: ['', [Validators.required]],
       pagadorId: [null, [Validators.required]],
       recebedorId: [null, [Validators.required]],
-      grupoId: [null],
-      observacao: [''],
+			grupoId: [null, [Validators.required]],
+			observacao: ['', [Validators.maxLength(255)]],
     });
   }
 
@@ -93,7 +95,7 @@ export class PagamentosComponent implements OnInit {
 
     this.form.patchValue({
       data: dataIso,
-      valor: pagamento.valor,
+			valor: this.formatarNumeroParaDecimal(pagamento.valor),
       pagadorId: pagador?.id ?? null,
       recebedorId: recebedor?.id ?? null,
       grupoId: pagamento.grupoId ?? null,
@@ -103,10 +105,12 @@ export class PagamentosComponent implements OnInit {
 
   limpar(): void {
     this.form.reset();
+		this.submitted = false;
   }
 
   salvar(): void {
     if (this.salvando) return;
+		this.submitted = true;
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -123,12 +127,19 @@ export class PagamentosComponent implements OnInit {
     }
 
     const data = String(this.form.value.data ?? '').trim();
-    const valor = Number(this.form.value.valor ?? 0);
+    const valorStr = String(this.form.value.valor ?? '').trim();
+    const valor = this.parseValorDecimalBr(valorStr);
 
     if (!data || !valor || valor <= 0) {
       this.snackBar.open('Informe uma data e um valor válidos.', 'OK', { duration: 4000 });
       return;
     }
+
+    const observacaoRaw = (this.form.value.observacao as string | null) ?? null;
+		const observacaoTrim = observacaoRaw?.trim() || null;
+		const observacaoLimitada = observacaoTrim && observacaoTrim.length > 255
+			? observacaoTrim.substring(0, 255)
+			: observacaoTrim;
 
     const req: PagamentoCreateRequest = {
       data,
@@ -136,7 +147,7 @@ export class PagamentosComponent implements OnInit {
       pagadorId: pagadorId!,
       recebedorId: recebedorId!,
       grupoId: (this.form.value.grupoId as number | null) ?? null,
-      observacao: (this.form.value.observacao as string | null)?.trim() || null,
+			observacao: observacaoLimitada,
     };
 
     this.salvando = true;
@@ -163,5 +174,73 @@ export class PagamentosComponent implements OnInit {
           this.snackBar.open(msg, 'OK', { duration: 5000 });
         },
       });
+  }
+
+  private formatarNumeroParaDecimal(valor: number | null | undefined): string {
+    if (valor == null || Number.isNaN(valor)) {
+      return '';
+    }
+    return valor.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      useGrouping: true,
+    });
+  }
+
+  onValorInput(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    if (!input) return;
+
+    const somenteNumeros = input.value.replace(/\D/g, '');
+    if (!somenteNumeros) {
+      this.form.get('valor')?.setValue('', { emitEvent: false });
+      input.value = '';
+      return;
+    }
+
+    const valorNumero = Number.parseInt(somenteNumeros, 10) / 100;
+      const formatado = this.formatarNumeroParaDecimal(valorNumero);
+    this.form.get('valor')?.setValue(formatado, { emitEvent: false });
+    input.value = formatado;
+  }
+
+  onValorKeydown(event: KeyboardEvent): void {
+    const allowedControlKeys = [
+      'Backspace',
+      'Delete',
+      'Tab',
+      'ArrowLeft',
+      'ArrowRight',
+      'Home',
+      'End',
+      'Enter',
+    ];
+
+    if (allowedControlKeys.includes(event.key)) {
+      return;
+    }
+
+    if (/^\d$/.test(event.key)) {
+      return;
+    }
+
+    // Bloqueia qualquer outra tecla (letras, símbolos etc.)
+    event.preventDefault();
+  }
+
+    private parseValorDecimalBr(valorStr: string): number {
+    if (!valorStr) return 0;
+    const somenteNumeros = valorStr.replace(/\D/g, '');
+    if (!somenteNumeros) return 0;
+    return Number.parseInt(somenteNumeros, 10) / 100;
+  }
+
+  onPessoaSelectClosed(controlName: 'pagadorId' | 'recebedorId' | 'grupoId'): void {
+    const control = this.form.get(controlName);
+    if (!control) return;
+    if (control.value == null) {
+      control.markAsPristine();
+      control.markAsUntouched();
+    }
   }
 }

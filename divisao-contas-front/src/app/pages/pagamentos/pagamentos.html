@@ -1,113 +1,149 @@
 <div class="page">
-	<div class="breadcrumb">
-		Pagamentos >> {{ modoEdicao ? 'Alterar Pagamento' : 'Cadastrar Pagamento' }}
-	</div>
+  <div class="page__container">
 
-	<div class="card">
-		<div class="card-header">
-			{{ modoEdicao ? 'Alterar Pagamento' : 'Cadastrar Pagamento' }}
-		</div>
+    <div class="breadcrumb">
+    </div>
 
-		<div class="card-body">
-			<form [formGroup]="form" (ngSubmit)="salvar()">
-				<div class="form-row">
-					<label class="form-label" for="dataPagamento">Data</label>
-					<mat-form-field appearance="fill" class="form-field">
-						<input
-							matInput
-							id="dataPagamento"
-							type="date"
-							formControlName="data"
-						/>
-						<mat-error *ngIf="form.get('data')?.hasError('required') && form.get('data')?.touched">
-							A data é obrigatória.
-						</mat-error>
-					</mat-form-field>
-				</div>
+    <div class="card card-primary">
+      <div class="card-header">
+        {{ modoEdicao ? 'Alterar Pagamento' : 'Cadastrar Pagamento' }}
+      </div>
 
-				<div class="form-row">
-					<label class="form-label" for="valorPagamento">Valor</label>
-					<mat-form-field appearance="fill" class="form-field">
-						<input
-							matInput
-							id="valorPagamento"
-							type="number"
-							min="0.01"
-							step="0.01"
-							formControlName="valor"
-						/>
-						<mat-error *ngIf="form.get('valor')?.hasError('required') && form.get('valor')?.touched">
-							O valor é obrigatório.
-						</mat-error>
-						<mat-error *ngIf="form.get('valor')?.hasError('min') && form.get('valor')?.touched">
-							Informe um valor maior que zero.
-						</mat-error>
-					</mat-form-field>
-				</div>
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="salvar()">
 
-				<div class="form-row">
-					<label class="form-label" for="pagador">Pagador</label>
-					<mat-form-field appearance="fill" class="form-field">
-						<mat-select id="pagador" formControlName="pagadorId">
-							<mat-option [value]="null">Selecione...</mat-option>
-							<mat-option *ngFor="let pessoa of pessoas" [value]="pessoa.id">
-								{{ pessoa.nome }}
-							</mat-option>
-						</mat-select>
-						<mat-error *ngIf="form.get('pagadorId')?.hasError('required') && form.get('pagadorId')?.touched">
-							O pagador é obrigatório.
-						</mat-error>
-					</mat-form-field>
-				</div>
+          <div class="form-row form-row-inline">
+            <div>
+              <label class="form-label" for="dataPagamento">Data</label>
+              <mat-form-field appearance="outline" class="form-field">
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  id="dataPagamento"
+                  formControlName="data"
+                  autocomplete="off"
+                  placeholder="Selecione a data"
+                />
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="form.get('data')?.hasError('required') && form.get('data')?.touched">
+                  A data é obrigatória.
+                </mat-error>
+              </mat-form-field>
+            </div>
 
-				<div class="form-row">
-					<label class="form-label" for="recebedor">Recebedor</label>
-					<mat-form-field appearance="fill" class="form-field">
-						<mat-select id="recebedor" formControlName="recebedorId">
-							<mat-option [value]="null">Selecione...</mat-option>
-							<mat-option *ngFor="let pessoa of pessoas" [value]="pessoa.id">
-								{{ pessoa.nome }}
-							</mat-option>
-						</mat-select>
-						<mat-error *ngIf="form.get('recebedorId')?.hasError('required') && form.get('recebedorId')?.touched">
-							O recebedor é obrigatório.
-						</mat-error>
-					</mat-form-field>
-				</div>
+            <div>
+              <label class="form-label" for="valorPagamento">Valor</label>
+              <mat-form-field appearance="outline" class="form-field">
+                <input
+                  matInput
+                  id="valorPagamento"
+                  type="text"
+                  autocomplete="off"
+                  inputmode="decimal"
+                  placeholder="Informe o valor"
+                  formControlName="valor"
+                  (input)="onValorInput($event)"
+                  (keydown)="onValorKeydown($event)"
+                />
+                <mat-error *ngIf="form.get('valor')?.hasError('required') && form.get('valor')?.touched">
+                  O valor é obrigatório.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
 
-				<div class="form-row">
-					<label class="form-label" for="grupoPagamento">Grupo</label>
-					<mat-form-field appearance="fill" class="form-field">
-						<mat-select id="grupoPagamento" formControlName="grupoId">
-							<mat-option [value]="null">Nenhum grupo</mat-option>
-							<mat-option *ngFor="let grupo of grupos" [value]="grupo.id">
-								{{ grupo.nome }}
-							</mat-option>
-						</mat-select>
-					</mat-form-field>
-				</div>
+          <div class="form-row form-row-inline">
+            <div>
+              <label class="form-label" for="pagador">Pagador</label>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-select
+                  id="pagador"
+                  formControlName="pagadorId"
+                  panelClass="pessoas-panel"
+                  (closed)="onPessoaSelectClosed('pagadorId')"
+                >
+                  <mat-option [value]="null">Selecione...</mat-option>
+                  <mat-option *ngFor="let pessoa of pessoas" [value]="pessoa.id">
+                    {{ pessoa.nome }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="submitted && form.get('pagadorId')?.hasError('required')">
+                  O pagador é obrigatório.
+                </mat-error>
+              </mat-form-field>
+            </div>
 
-				<div class="form-row">
-					<label class="form-label" for="observacaoPagamento">Observação</label>
-					<mat-form-field appearance="fill" class="form-field">
-						<textarea
-							matInput
-							id="observacaoPagamento"
-							rows="3"
-							formControlName="observacao"
-						></textarea>
-					</mat-form-field>
-				</div>
+            <div>
+              <label class="form-label" for="recebedor">Recebedor</label>
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-select
+                  id="recebedor"
+                  formControlName="recebedorId"
+                  panelClass="pessoas-panel"
+                  (closed)="onPessoaSelectClosed('recebedorId')"
+                >
+                  <mat-option [value]="null">Selecione...</mat-option>
+                  <mat-option *ngFor="let pessoa of pessoas" [value]="pessoa.id">
+                    {{ pessoa.nome }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="submitted && form.get('recebedorId')?.hasError('required')">
+                  O recebedor é obrigatório.
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
 
-				<div class="card-actions">
-					<button mat-stroked-button color="primary" type="button" (click)="limpar()">
-						Limpar
-					</button>
-					<button mat-flat-button color="primary" type="submit" [disabled]="salvando">
-						{{ modoEdicao ? 'Atualizar' : 'Salvar' }}
-					</button>
-				</div>
-			</form>
-		</div>
-	</div>
+          <div class="form-row">
+            <label class="form-label" for="grupoPagamento">Grupo</label>
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-select
+                id="grupoPagamento"
+                formControlName="grupoId"
+                panelClass="pessoas-panel"
+                (closed)="onPessoaSelectClosed('grupoId')"
+              >
+                <mat-option [value]="null">Nenhum grupo</mat-option>
+                <mat-option *ngFor="let grupo of grupos" [value]="grupo.id">
+                  {{ grupo.nome }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="submitted && form.get('grupoId')?.hasError('required')">
+                O grupo é obrigatório.
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <label class="form-label" for="observacaoPagamento">Observação</label>
+            <mat-form-field appearance="outline" class="form-field">
+              <textarea
+                matInput
+                id="observacaoPagamento"
+                rows="3"
+                formControlName="observacao"
+                maxlength="255"
+              ></textarea>
+              <mat-hint align="end">{{ (form.get('observacao')?.value?.length || 0) + '/255' }}</mat-hint>
+              <mat-error *ngIf="form.get('observacao')?.hasError('maxlength')">
+                A observação deve ter no máximo 255 caracteres.
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="card-actions">
+            <button mat-flat-button color="warn" type="button" (click)="limpar()">
+              Limpar
+            </button>
+            <button mat-flat-button color="primary" type="submit" [disabled]="salvando">
+              {{ modoEdicao ? 'Atualizar' : 'Salvar' }}
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </div>
 </div>

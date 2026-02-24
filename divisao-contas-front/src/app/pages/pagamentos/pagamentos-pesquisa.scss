@@ -1,104 +1,86 @@
-.page {
-  padding: 16px;
-  min-height: calc(100vh - 64px - 40px);
-  background: #11182b;
-  color: #ffffff;
-}
-
-.breadcrumb {
-  font-size: 13px;
-  margin-bottom: 12px;
-  color: #b0b7d1;
-}
-
-.card {
-  background: #0b1020;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-  border: 1px solid #1f2940;
-}
-
-.card-header {
-  padding: 12px 16px;
-  font-size: 16px;
-  font-weight: 600;
-  background: linear-gradient(90deg, #1a2a6c, #27336b);
-  border-bottom: 1px solid #1f2940;
-}
-
-.card-body {
-  padding: 16px;
-}
-
 .filter-row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start; /* importante pra não “descer” tudo */
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .filter-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .filter-row { grid-template-columns: 1fr; }
 }
 
 .filter-field {
-  display: flex;
-  flex-direction: column;
-}
-
-.form-label {
-  font-size: 13px;
-  margin-bottom: 4px;
-  color: #d0d6f0;
-}
-
-.form-field {
+  flex: 1 1 auto;
   width: 100%;
 }
 
 .filter-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 12px;
+  align-items: flex-end;
+  padding-bottom: 2px;
 }
 
-.result-card {
-  margin-top: 16px;
-  background: #0b1020;
-  border-radius: 8px;
-  border: 1px solid #1f2940;
+/* ===== Tabela de resultados (Pagamentos) ===== */
+
+.pagamentos-table {
+  width: 100%;
 }
 
-.result-header,
-.result-row {
+/* header e linhas com o MESMO grid */
+.pagamentos-table .result-header,
+.pagamentos-table .result-row {
   display: grid;
-  grid-template-columns: 100px 120px 1fr 1fr 160px 1.5fr 100px;
-  padding: 8px 12px;
   align-items: center;
+
+  /*        data    valor     pagador     recebedor    grupo    acoes */
+  grid-template-columns: 140px 150px 1.4fr 1.4fr 1.2fr 110px;
+
+  column-gap: 32px; /* <<< AQUI aumenta o respiro */
+  padding: 16px 22px;
 }
 
-.result-header {
-  background: #151d35;
-  font-weight: 600;
+/* deixa cabeçalho mais “de tabela” */
+.pagamentos-table .result-header {
   font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
 }
 
-.result-row:nth-child(odd) {
-  background: #090f1f;
-}
-
-.result-row:nth-child(even) {
-  background: #0f1627;
-}
-
-.col.valor {
+/* valores e ações alinhados */
+.pagamentos-table .col.valor {
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
-.col.acao {
+.pagamentos-table .col.acoes {
   display: flex;
   justify-content: flex-end;
-  gap: 4px;
+  gap: 8px;
 }
 
-.sem-registros {
-  margin-top: 16px;
-  text-align: center;
-  color: #b0b7d1;
+/* evita quebrar texto e ficar feio */
+.pagamentos-table .col.pagador,
+.pagamentos-table .col.recebedor,
+.pagamentos-table .col.grupo {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* responsivo: em telas menores, encolhe e some “Grupo” */
+@media (max-width: 1100px) {
+  .pagamentos-table .result-header,
+  .pagamentos-table .result-row {
+    grid-template-columns: 120px 110px 1fr 1fr 90px;
+  }
+
+  .pagamentos-table .col.grupo {
+    display: none;
+  }
 }

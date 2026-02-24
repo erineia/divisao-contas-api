@@ -4,6 +4,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { HomeComponent } from './home/home.component';
 import { FechamentosComponent } from './pages/fechamentos/fechamentos';
 import { LancamentosComponent } from './pages/lancamentos/lancamentos';
+import { LancamentosPesquisaComponent } from './pages/lancamentos/lancamentos-pesquisa';
 import { PessoasComponent } from './pages/pessoas/pessoas';
 import { PagamentosComponent } from './pages/pagamentos/pagamentos';
 import { PagamentosPesquisaComponent } from './pages/pagamentos/pagamentos-pesquisa';
@@ -30,6 +31,9 @@ const routes: Routes = [
       // demais telas podem ser encaixadas aqui depois, quando tiverem layout definido
       { path: 'fechamentos', component: FechamentosComponent },
       { path: 'lancamentos', component: LancamentosComponent },
+      { path: 'lancamentos/cadastrar', component: LancamentosComponent },
+      { path: 'lancamentos/editar/:id', component: LancamentosComponent },
+      { path: 'lancamentos/pesquisar', component: LancamentosPesquisaComponent },
       { path: 'pagamentos/cadastrar', component: PagamentosComponent },
       { path: 'pagamentos/editar/:id', component: PagamentosComponent },
       { path: 'pagamentos/pesquisar', component: PagamentosPesquisaComponent },
@@ -48,6 +52,8 @@ const routes: Routes = [
   { path: 'grupos/cadastrar', redirectTo: 'home/grupos/cadastrar', pathMatch: 'full' },
   { path: 'grupos/pesquisar', redirectTo: 'home/grupos/pesquisar', pathMatch: 'full' },
 
+  { path: 'lancamentos/cadastrar', redirectTo: 'home/lancamentos/cadastrar', pathMatch: 'full' },
+  { path: 'lancamentos/editar/:id', redirectTo: 'home/lancamentos/editar/:id', pathMatch: 'full' },
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' },
 ];

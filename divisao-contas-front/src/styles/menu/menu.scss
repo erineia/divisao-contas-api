@@ -1,0 +1,184 @@
+/* =========================
+   MENU LATERAL (NAVY)
+   ========================= */
+
+/* Fundo do sidenav (todas as camadas do Material) */
+mat-sidenav.sidenav,
+.mat-drawer.sidenav,
+.mat-drawer {
+  background: #050814 !important;
+  color: #fff !important;
+  border-right: 1px solid #141b2d;
+}
+
+.mat-drawer-inner-container {
+  background: #050814 !important;
+}
+
+/* Accordion / Painéis sem cinza, sem bordas padrão */
+mat-sidenav.sidenav .mat-accordion,
+mat-sidenav.sidenav .mat-expansion-panel,
+mat-sidenav.sidenav .mat-expansion-panel-header {
+  background: transparent !important;
+  color: #fff !important;
+  box-shadow: none !important;
+}
+
+/* Linha separadora suave entre grupos */
+mat-sidenav.sidenav .mat-expansion-panel {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Header do grupo (Pessoa, Pagamentos...) */
+mat-sidenav.sidenav .mat-expansion-panel-header {
+  height: 52px;
+  padding: 0 14px;
+}
+
+/* Título e ícones do header */
+mat-sidenav.sidenav .mat-expansion-panel-header-title {
+  color: #fff !important;
+  font-weight: 500;
+}
+
+mat-sidenav.sidenav .mat-expansion-panel-header mat-icon,
+mat-sidenav.sidenav .mat-expansion-indicator::after {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+/* Hover do header do grupo */
+mat-sidenav.sidenav .mat-expansion-panel-header:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+/* =========================
+   SUBMENUS (um embaixo do outro)
+   ========================= */
+
+/* o container interno onde ficam os links */
+mat-sidenav.sidenav .mat-expansion-panel-body {
+  padding: 6px 0 10px !important;
+}
+
+/* links do submenu: vira "linha" 100% (um embaixo do outro) */
+a.menu-item.mat-mdc-button-base {
+  display: flex !important;
+  width: 100% !important;
+  justify-content: flex-start !important;
+
+  padding: 10px 14px 10px 54px !important;
+  margin: 2px 10px !important;
+
+  border-radius: 10px !important;
+  text-transform: none !important;
+
+  color: rgba(255, 255, 255, 0.88) !important;
+  background: transparent !important;
+
+  position: relative;
+}
+
+/* remove ripple que “lava” o fundo */
+a.menu-item .mat-mdc-button-persistent-ripple,
+a.menu-item .mat-mdc-button-ripple {
+  opacity: 0 !important;
+}
+
+/* hover: cor diferente */
+a.menu-item:hover {
+  background: rgba(63, 107, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+/* ativo: destaque */
+a.menu-item.active {
+  background: rgba(63, 107, 255, 0.20) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* barrinha lateral no ativo */
+a.menu-item.active::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 2px;
+  background: #3f6bff;
+}
+
+/* =========================
+   Rodapé do menu
+   ========================= */
+.sidenav-footer {
+  padding: 12px 18px 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  background: #050814;
+}
+
+.sidenav-footer-title {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.sidenav-footer-subtitle {
+  font-size: 10px;
+  opacity: 0.9;
+}
+/* fundo navy do menu */
+mat-sidenav.sidenav,
+.mat-drawer {
+  background: #050814 !important;
+  color: #fff !important;
+  border-right: 1px solid #141b2d;
+}
+
+.mat-drawer-inner-container {
+  background: #050814 !important;
+}
+
+/* REMOVE o cinza dos painéis */
+mat-sidenav .mat-expansion-panel,
+mat-sidenav .mat-expansion-panel-header {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* AQUI é o que resolve “ficar lado a lado” */
+mat-sidenav .mat-expansion-panel-body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px;
+  padding: 8px 0 12px !important;
+}
+
+/* submenu 100% largura, um abaixo do outro */
+a.menu-item {
+  width: 100% !important;
+  justify-content: flex-start !important;
+  display: flex !important;
+
+  padding: 10px 14px 10px 54px !important;
+  margin: 0 10px !important;
+  border-radius: 10px !important;
+
+  background: transparent !important;
+  color: rgba(255,255,255,0.88) !important;
+}
+
+/* hover */
+a.menu-item:hover {
+  background: rgba(63, 107, 255, 0.12) !important;
+  color: #fff !important;
+}
+
+/* ativo */
+a.menu-item.active {
+  background: rgba(63, 107, 255, 0.20) !important;
+  color: #fff !important;
+  font-weight: 600;
+}

@@ -1,2 +1,159 @@
-<h1>Lançamentos</h1>
-<p>Em construção…</p>
+<div class="page">
+  <div class="page__container">
+    <div class="breadcrumb"></div>
+
+    <div class="card card-primary">
+      <div class="card-header">
+        {{ modoEdicao ? 'Alterar Lançamento' : 'Cadastrar Lançamento' }}
+      </div>
+
+      <div class="card-body">
+        <form [formGroup]="form" (ngSubmit)="salvar()">
+          <!-- Grid principal: Data/Valor + Pagador/Participantes -->
+          <div class="form-grid">
+            <!-- Data -->
+            <mat-form-field appearance="outline" class="field">
+              <mat-label>Data</mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                formControlName="data"
+                autocomplete="off"
+                placeholder="Selecione a data"
+                required
+              />
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error
+                *ngIf="form.get('data')?.hasError('required') && form.get('data')?.touched"
+              >
+                A data é obrigatória.
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Valor -->
+            <mat-form-field appearance="outline" class="field">
+              <mat-label>Valor</mat-label>
+              <input
+                matInput
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+                placeholder="Informe o valor"
+                formControlName="valor"
+                required
+              />
+              <mat-error
+                *ngIf="form.get('valor')?.hasError('required') && form.get('valor')?.touched"
+              >
+                O valor é obrigatório.
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Pagador -->
+            <mat-form-field appearance="outline" class="field">
+              <mat-label>Pagador</mat-label>
+              <mat-select formControlName="pagadorId" panelClass="pessoas-panel" required>
+                <mat-option [value]="null">Selecione...</mat-option>
+                <mat-option *ngFor="let pessoa of pessoas; trackBy: trackById" [value]="pessoa.id">
+                  {{ pessoa.nome }}
+                </mat-option>
+              </mat-select>
+              <mat-error
+                *ngIf="
+                  form.get('pagadorId')?.hasError('required') && form.get('pagadorId')?.touched
+                "
+              >
+                O pagador é obrigatório.
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Participantes -->
+            <mat-form-field appearance="outline" class="field">
+              <mat-label>Participantes</mat-label>
+              <mat-select
+                formControlName="participantesIds"
+                multiple
+                panelClass="pessoas-panel"
+                required
+              >
+                <mat-option *ngFor="let pessoa of pessoas; trackBy: trackById" [value]="pessoa.id">
+                  {{ pessoa.nome }}
+                </mat-option>
+              </mat-select>
+              <mat-error
+                *ngIf="
+                  form.get('participantesIds')?.hasError('required') &&
+                  form.get('participantesIds')?.touched
+                "
+              >
+                Selecione pelo menos um participante.
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Linha: Grupo + Descrição lado a lado -->
+          <div class="form-row--2-1">
+            <!-- Grupo -->
+            <mat-form-field appearance="outline" class="field">
+              <mat-label>Grupo</mat-label>
+              <mat-select formControlName="grupoId" panelClass="pessoas-panel">
+                <mat-option [value]="null">Nenhum grupo</mat-option>
+                <mat-option *ngFor="let grupo of grupos; trackBy: trackById" [value]="grupo.id">
+                  {{ grupo.nome }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!-- Descrição -->
+            <mat-form-field appearance="outline" class="field">
+              <mat-label>Descrição</mat-label>
+              <input
+                matInput
+                type="text"
+                maxlength="100"
+                placeholder="Informe a descrição"
+                formControlName="descricao"
+                required
+              />
+              <mat-hint align="end">{{
+                (form.get('descricao')?.value?.length || 0) + '/100'
+              }}</mat-hint>
+              <mat-error
+                *ngIf="
+                  form.get('descricao')?.hasError('required') && form.get('descricao')?.touched
+                "
+              >
+                A descrição é obrigatória.
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <!-- Ações (igual Pessoa) -->
+          <div class="card-actions card-actions-right">
+            <button
+              mat-raised-button
+              color="warn"
+              type="button"
+              (click)="limpar()"
+              [disabled]="salvando"
+            >
+              Limpar
+            </button>
+
+            <button mat-flat-button color="primary" type="submit" [disabled]="salvando">
+              {{ modoEdicao ? 'Atualizar' : 'Salvar' }}
+            </button>
+          </div>
+
+          <!-- Se quiser manter o spinner, use este botão no lugar do "Salvar" acima:
+          <button mat-raised-button color="primary" type="submit" [disabled]="salvando || form.invalid">
+            <mat-spinner *ngIf="salvando" diameter="18"></mat-spinner>
+            <span>{{ modoEdicao ? 'Atualizar' : 'Salvar' }}</span>
+          </button>
+          -->
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

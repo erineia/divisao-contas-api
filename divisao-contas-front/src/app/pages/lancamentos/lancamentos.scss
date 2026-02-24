@@ -1,0 +1,69 @@
+// Deixa os erros com cara mais “compacta”
+mat-error {
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+// Form
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Grid responsivo (2 colunas / 1 no mobile)
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+  align-items: end;
+}
+
+.field {
+  width: 100%;
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+// Ações
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.actions button mat-icon {
+  margin-right: 8px;
+}
+
+// Snackbar feedback
+.snackbar-success {
+  background: #43a047;
+  color: #fff;
+}
+.snackbar-error {
+  background: #c62828;
+  color: #fff;
+}
+
+// Responsivo
+@media (max-width: 900px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .span-2 {
+    grid-column: auto;
+  }
+
+  .actions {
+    justify-content: stretch;
+  }
+
+  .actions button {
+    flex: 1;
+  }
+}

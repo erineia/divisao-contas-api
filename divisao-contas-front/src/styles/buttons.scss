@@ -1,0 +1,97 @@
+/* ============================
+   BOTÕES PADRÃO SISTEMA
+   ============================ */
+
+.btn-custom {
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 90px;
+  height: 36px;
+}
+
+/* ---------------- Novo (BRANCO) ---------------- */
+
+.btn-novo {
+  background-color: #ffffff;
+  color: #11182b;
+  border: 1px solid #dcdcdc;
+}
+
+.btn-novo:hover {
+  background-color: #f3f3f3;
+}
+
+/* ---------------- Limpar (VERMELHO) ---------------- */
+
+.btn-limpar {
+  background-color: #e53935;
+  color: #ffffff;
+}
+
+.btn-limpar:hover {
+  background-color: #d32f2f;
+}
+
+/* ---------------- Pesquisar (AZUL PADRÃO) ---------------- */
+
+.btn-pesquisar {
+  background-color: #3f6bff;
+  color: #ffffff;
+}
+
+.btn-pesquisar:hover {
+  background-color: #345ae0;
+}
+
+/* ---------------- Desabilitado ---------------- */
+
+.btn-custom:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.actions button {
+  min-height: 44px;
+  min-width: 120px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.actions button mat-icon,
+.actions button mat-spinner {
+  margin-right: 8px;
+}
+.card-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+/* ✅ força os botões para o canto direito */
+.card-actions-right {
+  justify-content: flex-end;
+}
+
+/* ✅ visual mais “bonito” e consistente */
+.card-actions button {
+  min-height: 42px;
+  min-width: 120px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* ✅ ícone alinhado */
+.card-actions button mat-icon {
+  margin-right: 8px;
+}

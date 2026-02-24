@@ -1,4 +1,5 @@
 <div class="page">
+  <div class="page__container">
 	<div class="breadcrumb">Pessoas &gt;&gt; {{ modoEdicao ? 'Alterar Pessoa' : 'Cadastrar Pessoas' }}</div>
 
 	<div class="card">
@@ -8,7 +9,7 @@
 			<form [formGroup]="form" (ngSubmit)="salvar()">
 				<div class="form-row">
 					<label class="form-label" for="nomePessoa">Nome Pessoa</label>
-					<mat-form-field appearance="fill" class="form-field">
+					<mat-form-field appearance="outline" class="form-field">
 						<input matInput id="nomePessoa" placeholder="Nome da Pessoa" formControlName="nome" />
 						<mat-error *ngIf="form.get('nome')?.touched && form.get('nome')?.hasError('required')">
 							O nome é obrigatório.
