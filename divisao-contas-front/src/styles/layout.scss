@@ -25,3 +25,39 @@
   gap: 10px;
   margin-top: 16px;
 }
+/* Espaçamento entre botões à direita (ex: Limpar / Pesquisar) */
+.filter-actions .actions-right {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* aumenta o espaçamento entre os botões */
+}
+.form-row--2-1 {
+  display: grid;
+  grid-template-columns: 340px 1fr; // Grupo fixo, descrição ocupa o resto
+  gap: 16px 24px;
+  align-items: end;
+}
+
+@media (max-width: 900px) {
+  .form-row--2-1 {
+    grid-template-columns: 1fr;
+  }
+}
+mat-hint[align='end'] {
+  display: block;
+  text-align: right;
+  opacity: 0.9;
+}
+.form-grid {
+  gap: 12px 24px; // antes 16px 24px
+}
+
+/* Força tamanho menor para mensagens de erro do Angular Material dentro da aplicação
+   Usado quando regras de componente não surtiram efeito por especificidade/encapsulamento */
+.page__container .mat-error,
+.page .mat-error {
+  font-size: 9px !important;
+  line-height: 1.1 !important;
+  margin-top: 2px !important;
+  opacity: 0.95 !important;
+}

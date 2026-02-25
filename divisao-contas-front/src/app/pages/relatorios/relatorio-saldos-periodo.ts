@@ -11,6 +11,7 @@ import {
 import { RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../shared/notification.service';
 
 import { MaterialModule } from '../../material-module';
 import { RelatorioService } from './relatorio.service';
@@ -66,6 +67,7 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
     private grupoService: GrupoService,
     private lancamentoService: LancamentoService,
     private snackBar: MatSnackBar,
+    private notification: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -225,7 +227,7 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
                 this.relatorioGerado = true;
                 this.cdr.markForCheck();
               } else {
-                this.snackBar.open('Relatório vazio para o período selecionado.', 'Fechar', { duration: 3000 });
+                this.notification.warn('Relatório vazio para o período selecionado.');
               }
             },
           });
@@ -249,7 +251,18 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
 
   exportarCSV(exportarSemGerar = false): void {
     if (!this.relatorioGerado) {
-      if (exportarSemGerar) return;
+      // força exibição de erros como no botão Gerar
+      this.filtrosForm.markAllAsTouched();
+
+      // mostra a mensagem adequada (campos obrigatórios ou date range)
+      const periodo = this.getPeriodoOrShowError();
+      if (!periodo) {
+        // se veio com flag para não gerar após já gerado, apenas retorna
+        if (exportarSemGerar) return;
+        return;
+      }
+
+      // se o período é válido, delega para gerarRelatorio com exportação ao final
       this.gerarRelatorio(true);
       return;
     }
@@ -295,12 +308,13 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
     dataFimStr: string;
   } | null {
     if (this.filtrosForm.invalid) {
-      const rangeInvalid = this.filtrosForm.hasError('dateRangeInvalid');
-      const msg = rangeInvalid
-        ? 'Data final deve ser maior ou igual à inicial.'
-        : 'Selecione o período! Certifique-se de digitar datas válidas (dd/MM/yyyy).';
-
-      this.snackBar.open(msg, 'Fechar', { duration: 3500, panelClass: 'snackbar-error' });
+      // Se o form estiver inválido, prioriza mensagem específica para range
+      if (typeof this.filtrosForm.hasError === 'function' && this.filtrosForm.hasError('dateRangeInvalid')) {
+        this.notification.warn('Data Final não pode ser menor que data Inicial');
+      } else {
+        // show field errors (already marked as touched) and a standardized warning snackbar
+        this.notification.warn('Por favor, preencha todos os campos obrigatórios.');
+      }
       return null;
     }
 

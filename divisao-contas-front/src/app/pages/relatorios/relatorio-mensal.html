@@ -25,13 +25,14 @@
                 <mat-option *ngFor="let grupo of grupos" [value]="grupo.id">{{ grupo.nome }}</mat-option>
               </mat-select>
             </mat-form-field>
+          </div>
+        </form>
+          <div class="filter-actions" style="margin-top:12px;">
             <button mat-flat-button color="primary" type="button" (click)="exportarCSV()">
               Exportar CSV
             </button>
           </div>
-        </form>
         <div class="relatorio-conteudo">
-          <p>Utilize o botão Exportar CSV para baixar o relatório mensal diretamente da API.</p>
         </div>
       </div>
     </div>

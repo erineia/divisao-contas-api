@@ -1,16 +1,14 @@
 <div class="page">
   <div class="page__container">
-	<div class="breadcrumb">Pessoas &gt;&gt; {{ modoEdicao ? 'Alterar Pessoa' : 'Cadastrar Pessoas' }}</div>
-
-	<div class="card">
+	<div class="card card-primary">
 		<div class="card-header">{{ modoEdicao ? 'Alterar Pessoa' : 'Cadastrar Pessoas' }}</div>
 
 		<div class="card-body">
 			<form [formGroup]="form" (ngSubmit)="salvar()">
 				<div class="form-row">
-					<label class="form-label" for="nomePessoa">Nome Pessoa</label>
 					<mat-form-field appearance="outline" class="form-field">
-						<input matInput id="nomePessoa" placeholder="Nome da Pessoa" formControlName="nome" />
+						<input matInput id="nomePessoa" placeholder="Informe o nome da Pessoa" formControlName="nome" maxlength="80" />
+						<mat-hint align="end">{{ (form.get('nome')?.value?.length || 0) + '/80' }}</mat-hint>
 						<mat-error *ngIf="form.get('nome')?.touched && form.get('nome')?.hasError('required')">
 							O nome é obrigatório.
 						</mat-error>

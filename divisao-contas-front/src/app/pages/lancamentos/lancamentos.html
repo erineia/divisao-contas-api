@@ -8,7 +8,7 @@
       </div>
 
       <div class="card-body">
-        <form [formGroup]="form" (ngSubmit)="salvar()">
+        <form [formGroup]="form" (ngSubmit)="salvar()" [class.no-invalid-outline]="hideInvalidOutline">
           <!-- Grid principal: Data/Valor + Pagador/Participantes -->
           <div class="form-grid">
             <!-- Data -->
@@ -41,6 +41,8 @@
                 autocomplete="off"
                 placeholder="Informe o valor"
                 formControlName="valor"
+                (input)="onValorInput($event)"
+                (keydown)="onValorKeydown($event)"
                 required
               />
               <mat-error

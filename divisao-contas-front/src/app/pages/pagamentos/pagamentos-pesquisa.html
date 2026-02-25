@@ -6,7 +6,6 @@
         <form [formGroup]="form" (ngSubmit)="pesquisar()">
           <div class="filter-row">
             <div class="filter-field">
-              <label class="form-label" for="dataInicio">Data Início</label>
               <mat-form-field appearance="outline" class="form-field">
                 <input
                   matInput
@@ -22,7 +21,6 @@
             </div>
 
             <div class="filter-field">
-              <label class="form-label" for="dataFim">Data Fim</label>
               <mat-form-field appearance="outline" class="form-field">
                 <input
                   matInput
@@ -38,16 +36,14 @@
             </div>
 
             <div class="filter-field">
-              <label class="form-label" for="pagadorFiltro">Pagador</label>
               <mat-form-field appearance="outline" class="form-field">
-                <input matInput id="pagadorFiltro" type="text" formControlName="pagador" />
+                <input matInput id="pagadorFiltro" type="text" placeholder="Informe o nome da pessoa pagadora" formControlName="pagador" maxlength="80" />
               </mat-form-field>
             </div>
 
             <div class="filter-field">
-              <label class="form-label" for="recebedorFiltro">Recebedor</label>
               <mat-form-field appearance="outline" class="form-field">
-                <input matInput id="recebedorFiltro" type="text" formControlName="recebedor" />
+                <input matInput id="recebedorFiltro" type="text" placeholder="Informe o nome da pessoa recebedora" formControlName="recebedor" maxlength="80" />
               </mat-form-field>
             </div>
           </div>

@@ -1,8 +1,6 @@
 <div class="page">
   <div class="page__container">
-
-    <div class="breadcrumb">
-    </div>
+    <div class="breadcrumb"></div>
 
     <div class="card card-primary">
       <div class="card-header">
@@ -11,10 +9,8 @@
 
       <div class="card-body">
         <form [formGroup]="form" (ngSubmit)="salvar()">
-
           <div class="form-row form-row-inline">
             <div>
-              <label class="form-label" for="dataPagamento">Data</label>
               <mat-form-field appearance="outline" class="form-field">
                 <input
                   matInput
@@ -26,14 +22,15 @@
                 />
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-datepicker #picker></mat-datepicker>
-                <mat-error *ngIf="form.get('data')?.hasError('required') && form.get('data')?.touched">
+                <mat-error
+                  *ngIf="form.get('data')?.hasError('required') && form.get('data')?.touched"
+                >
                   A data é obrigatória.
                 </mat-error>
               </mat-form-field>
             </div>
 
             <div>
-              <label class="form-label" for="valorPagamento">Valor</label>
               <mat-form-field appearance="outline" class="form-field">
                 <input
                   matInput
@@ -46,7 +43,9 @@
                   (input)="onValorInput($event)"
                   (keydown)="onValorKeydown($event)"
                 />
-                <mat-error *ngIf="form.get('valor')?.hasError('required') && form.get('valor')?.touched">
+                <mat-error
+                  *ngIf="form.get('valor')?.hasError('required') && form.get('valor')?.touched"
+                >
                   O valor é obrigatório.
                 </mat-error>
               </mat-form-field>
@@ -55,13 +54,14 @@
 
           <div class="form-row form-row-inline">
             <div>
-              <label class="form-label" for="pagador">Pagador</label>
               <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Pagador</mat-label>
                 <mat-select
                   id="pagador"
                   formControlName="pagadorId"
                   panelClass="pessoas-panel"
                   (closed)="onPessoaSelectClosed('pagadorId')"
+                  required
                 >
                   <mat-option [value]="null">Selecione...</mat-option>
                   <mat-option *ngFor="let pessoa of pessoas" [value]="pessoa.id">
@@ -75,13 +75,14 @@
             </div>
 
             <div>
-              <label class="form-label" for="recebedor">Recebedor</label>
               <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Recebedor</mat-label>
                 <mat-select
                   id="recebedor"
                   formControlName="recebedorId"
                   panelClass="pessoas-panel"
                   (closed)="onPessoaSelectClosed('recebedorId')"
+                  required
                 >
                   <mat-option [value]="null">Selecione...</mat-option>
                   <mat-option *ngFor="let pessoa of pessoas" [value]="pessoa.id">
@@ -96,13 +97,14 @@
           </div>
 
           <div class="form-row">
-            <label class="form-label" for="grupoPagamento">Grupo</label>
             <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Grupo</mat-label>
               <mat-select
                 id="grupoPagamento"
                 formControlName="grupoId"
                 panelClass="pessoas-panel"
                 (closed)="onPessoaSelectClosed('grupoId')"
+                required
               >
                 <mat-option [value]="null">Nenhum grupo</mat-option>
                 <mat-option *ngFor="let grupo of grupos" [value]="grupo.id">
@@ -125,7 +127,9 @@
                 formControlName="observacao"
                 maxlength="255"
               ></textarea>
-              <mat-hint align="end">{{ (form.get('observacao')?.value?.length || 0) + '/255' }}</mat-hint>
+              <mat-hint align="end">{{
+                (form.get('observacao')?.value?.length || 0) + '/255'
+              }}</mat-hint>
               <mat-error *ngIf="form.get('observacao')?.hasError('maxlength')">
                 A observação deve ter no máximo 255 caracteres.
               </mat-error>
@@ -133,17 +137,13 @@
           </div>
 
           <div class="card-actions">
-            <button mat-flat-button color="warn" type="button" (click)="limpar()">
-              Limpar
-            </button>
+            <button mat-flat-button color="warn" type="button" (click)="limpar()">Limpar</button>
             <button mat-flat-button color="primary" type="submit" [disabled]="salvando">
               {{ modoEdicao ? 'Atualizar' : 'Salvar' }}
             </button>
           </div>
-
         </form>
       </div>
     </div>
-
   </div>
 </div>

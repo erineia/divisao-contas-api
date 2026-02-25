@@ -62,25 +62,28 @@
 
             <!-- Ações -->
             <div class="actions-right">
-              <button mat-stroked-button type="button" (click)="limpar()" [disabled]="carregando">
+              <button class="btn-clear" mat-flat-button type="button" (click)="limpar()" [disabled]="carregando" style="background-color:#ef4444;color:#ffffff;border-radius:8px;padding:8px 16px;box-shadow:none;border:none">
                 Limpar
               </button>
 
               <button
+                class="btn-generate"
                 mat-flat-button
-                color="primary"
                 type="button"
                 (click)="gerarRelatorio()"
-                [disabled]="carregando || filtrosForm.invalid"
+                [disabled]="carregando"
+                style="background-color:#16a34a;color:#ffffff"
               >
                 Gerar
               </button>
 
               <button
-                mat-stroked-button
+                class="btn-export"
+                mat-flat-button
                 type="button"
                 (click)="exportarCSV()"
-                [disabled]="carregando || !relatorioGerado"
+                [disabled]="carregando"
+                style="background-color:#2563eb;color:#ffffff;border-radius:8px;padding:8px 16px;box-shadow:none;border:none"
               >
                 Exportar CSV
               </button>
@@ -151,9 +154,7 @@
           </div>
         </div>
 
-        <div class="relatorio-conteudo" *ngIf="!relatorioGerado && !carregando">
-          <p>Selecione o período e clique em <b>Gerar</b> para visualizar quem deve para quem.</p>
-        </div>
+        
       </div>
     </div>
   </div>

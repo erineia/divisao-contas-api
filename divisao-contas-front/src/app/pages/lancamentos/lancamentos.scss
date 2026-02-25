@@ -67,3 +67,39 @@ mat-error {
     flex: 1;
   }
 }
+
+/* Quando a classe .no-invalid-outline estiver presente no form,
+   escondemos os contornos vermelhos mas mantemos o texto de erro (mat-error).
+*/
+.no-invalid-outline {
+  .mat-mdc-form-field.mat-mdc-form-field-invalid {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__trailing,
+    .mdc-notched-outline__notch {
+      border-color: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .mat-mdc-form-field-infix,
+    .mat-mdc-text-field-wrapper {
+      box-shadow: none !important;
+    }
+
+    // evita que o label/texto do campo fique vermelho
+    .mat-mdc-form-field-label,
+    .mat-mdc-input-element {
+      color: inherit !important;
+    }
+  }
+}
+
+/* High-specificity local override to ensure labels/inputs are not colored red */
+.card-primary .card-body .mat-form-field.mat-form-field-invalid .mat-form-field-label,
+.card-primary .card-body .mat-form-field.mat-form-field-invalid .mat-input-element,
+.card-primary .card-body .mat-mdc-form-field.mat-mdc-form-field-invalid .mat-mdc-form-field-label,
+.card-primary .card-body .mat-mdc-form-field.mat-mdc-form-field-invalid .mat-mdc-input-element,
+.card-primary .card-body .mat-form-field.mat-form-field-invalid .mat-select-value,
+.card-primary .card-body .mat-mdc-form-field.mat-mdc-form-field-invalid .mat-mdc-select-value {
+  color: rgba(255,255,255,0.87) !important;
+  fill: currentColor !important;
+}

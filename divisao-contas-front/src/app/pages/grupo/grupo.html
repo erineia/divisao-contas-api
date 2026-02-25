@@ -1,19 +1,17 @@
 <div class="page">
-	<div class="breadcrumb">Grupos &gt;&gt; {{ modoEdicao ? 'Alterar Grupo' : 'Cadastrar Grupo' }}</div>
-
-	<div class="card">
+	<div class="card card-primary">
 		<div class="card-header">{{ modoEdicao ? 'Alterar Grupo' : 'Cadastrar Grupo' }}</div>
 
 		<div class="card-body">
 			<form [formGroup]="form" (ngSubmit)="salvar()">
 				<div class="form-row">
-					<label class="form-label" for="nomeGrupo">Nome Grupo</label>
-					<mat-form-field appearance="fill" class="form-field">
-						<input matInput id="nomeGrupo" placeholder="Nome do Grupo" formControlName="nome" />
-						<mat-error *ngIf="form.get('nome')?.touched && form.get('nome')?.hasError('required')">
+					<mat-form-field appearance="outline" class="form-field">
+						<input matInput id="nomeGrupo" formControlName="nome" maxlength="80" placeholder="Informe o nome do grupo" />
+						<mat-hint align="end">{{ (form.get('nome')?.value?.length || 0) + '/80' }}</mat-hint>
+						<mat-error *ngIf="submitted && form.get('nome')?.hasError('required')">
 							O nome é obrigatório.
 						</mat-error>
-						<mat-error *ngIf="form.get('nome')?.touched && form.get('nome')?.hasError('minlength')">
+						<mat-error *ngIf="submitted && form.get('nome')?.hasError('minlength')">
 							Informe pelo menos 2 caracteres.
 						</mat-error>
 					</mat-form-field>

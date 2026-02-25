@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../material-module';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../shared/notification.service';
 import { finalize } from 'rxjs';
 import { PagamentoCreateRequest, PagamentoResponse, PagamentoService } from './pagamento.service';
 import { PessoaResponse, PessoaService } from '../pessoas/pessoa.service';
@@ -35,6 +36,7 @@ export class PagamentosComponent implements OnInit {
     private pessoaService: PessoaService,
     private grupoService: GrupoService,
     private snackBar: MatSnackBar,
+    private notification: NotificationService,
     private route: ActivatedRoute,
     private router: Router,
   ) {
@@ -114,7 +116,7 @@ export class PagamentosComponent implements OnInit {
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snackBar.open('Preencha todos os campos obrigatórios do pagamento.', 'OK', { duration: 3000 });
+      this.notification.warn('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
@@ -122,7 +124,7 @@ export class PagamentosComponent implements OnInit {
     const recebedorId = this.form.value.recebedorId as number | null;
 
     if (pagadorId != null && recebedorId != null && pagadorId === recebedorId) {
-      this.snackBar.open('Pagador e recebedor devem ser pessoas diferentes.', 'OK', { duration: 4000 });
+      this.notification.warn('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
@@ -131,7 +133,7 @@ export class PagamentosComponent implements OnInit {
     const valor = this.parseValorDecimalBr(valorStr);
 
     if (!data || !valor || valor <= 0) {
-      this.snackBar.open('Informe uma data e um valor válidos.', 'OK', { duration: 4000 });
+      this.notification.warn('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 

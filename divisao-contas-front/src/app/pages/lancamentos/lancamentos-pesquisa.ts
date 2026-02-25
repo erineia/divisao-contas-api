@@ -9,6 +9,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { finalize } from 'rxjs';
 import { LancamentoService, LancamentoResponse } from './lancamento.service';
+import { GrupoService, GrupoResponse } from '../grupo/grupo.service';
 import { ConfirmDialogComponent } from '../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
@@ -24,6 +25,7 @@ export class LancamentosPesquisaComponent implements OnInit {
   carregando = false;
   lancamentos: LancamentoResponse[] = [];
   lancamentosFiltrados: LancamentoResponse[] = [];
+  grupos: GrupoResponse[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -32,10 +34,11 @@ export class LancamentosPesquisaComponent implements OnInit {
     private dialog: MatDialog,
     private cdr: ChangeDetectorRef,
     private router: Router,
+    private grupoService: GrupoService,
   ) {
     this.form = this.fb.group({
       descricao: [''],
-      grupoNome: [''],
+      grupoId: [null],
     });
   }
   novo(): void {
@@ -86,6 +89,15 @@ export class LancamentosPesquisaComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregar();
+    this.grupoService.listar().subscribe({
+      next: (g: GrupoResponse[]) => {
+        this.grupos = Array.isArray(g) ? g : [];
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.grupos = [];
+      },
+    });
   }
 
   pesquisar(): void {
@@ -122,17 +134,16 @@ export class LancamentosPesquisaComponent implements OnInit {
   }
 
   private aplicarFiltro(): void {
-    const { descricao, grupoNome } = this.form.value;
+    const { descricao, grupoId } = this.form.value;
     const filtroDescricao = String(descricao || '').toLowerCase();
-    const filtroGrupo = String(grupoNome || '').toLowerCase();
 
     let resultado = [...this.lancamentos];
 
     if (filtroDescricao) {
       resultado = resultado.filter((l) => (l.descricao || '').toLowerCase().includes(filtroDescricao));
     }
-    if (filtroGrupo) {
-      resultado = resultado.filter((l) => (l.grupoNome || '').toLowerCase().includes(filtroGrupo));
+    if (grupoId != null) {
+      resultado = resultado.filter((l) => (l.grupoId ?? null) === grupoId);
     }
 
     resultado.sort((a, b) => (a.data || '').localeCompare(b.data || ''));

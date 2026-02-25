@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { NavigationEnd } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormGroupDirective } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
 
@@ -25,6 +25,10 @@ import { GrupoService, GrupoResponse } from '../grupo/grupo.service';
 })
 export class LancamentosComponent implements OnInit {
   form: FormGroup;
+
+  @ViewChild(FormGroupDirective) private formDirective?: FormGroupDirective;
+  // quando true, esconde o contorno inválido (apenas para limpar visual)
+  hideInvalidOutline = false;
 
   salvando = false;
   submitted = false;
@@ -110,7 +114,7 @@ export class LancamentosComponent implements OnInit {
       this.form.patchValue({
         descricao: lanc.descricao,
         data: dataISO,
-        valor: lanc.valor,
+        valor: this.formatarNumeroParaDecimal(typeof lanc.valor === 'number' ? lanc.valor : Number(lanc.valor)),
         pagadorId: lanc.pagador?.id ?? null,
         grupoId: lanc.grupoId ?? null,
         divide: lanc.divide ?? true,
@@ -133,10 +137,11 @@ export class LancamentosComponent implements OnInit {
     this.salvando = true;
     // Construir explicitamente o payload para garantir formato esperado pela API.
     const fv = this.form.value as any;
+    const valorNumber = this.parseValorDecimalBr(String(fv.valor ?? ''));
     const req: any = {
       descricao: fv.descricao,
       data: fv.data,
-      valor: fv.valor,
+      valor: valorNumber,
       pagadorId: fv.pagadorId,
       grupoId: fv.grupoId,
       divide: fv.divide,
@@ -181,9 +186,72 @@ export class LancamentosComponent implements OnInit {
       });
   }
 
+  onValorInput(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    if (!input) return;
+
+    const somenteNumeros = input.value.replace(/\D/g, '');
+    if (!somenteNumeros) {
+      this.form.get('valor')?.setValue('', { emitEvent: false });
+      input.value = '';
+      return;
+    }
+
+    const valorNumero = Number.parseInt(somenteNumeros, 10) / 100;
+    const formatado = this.formatarNumeroParaDecimal(valorNumero);
+    this.form.get('valor')?.setValue(formatado, { emitEvent: false });
+    input.value = formatado;
+  }
+
+  onValorKeydown(event: KeyboardEvent): void {
+    const allowedControlKeys = [
+      'Backspace',
+      'Delete',
+      'Tab',
+      'ArrowLeft',
+      'ArrowRight',
+      'Home',
+      'End',
+      'Enter',
+    ];
+
+    if (allowedControlKeys.includes(event.key)) {
+      return;
+    }
+
+    if (/^\d$/.test(event.key)) {
+      return;
+    }
+
+    // Bloqueia qualquer outra tecla (letras, símbolos etc.)
+    event.preventDefault();
+  }
+
+  private formatarNumeroParaDecimal(valor: number | null | undefined): string {
+    if (valor == null || Number.isNaN(valor)) {
+      return '';
+    }
+    return valor.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+      useGrouping: true,
+    });
+  }
+
+  private parseValorDecimalBr(valorStr: string): number {
+    if (!valorStr) return 0;
+    const somenteNumeros = valorStr.replace(/\D/g, '');
+    if (!somenteNumeros) return 0;
+    return Number.parseInt(somenteNumeros, 10) / 100;
+  }
+
   limpar(): void {
     this.resetForm();
     this.submitted = false;
+    // esconde contornos vermelhos após limpar
+    this.hideInvalidOutline = true;
+    // remove a máscara após próximo ciclo (se o usuário focar novamente, volta ao normal)
+    setTimeout(() => (this.hideInvalidOutline = false));
   }
 
   private resetForm(): void {
@@ -197,8 +265,28 @@ export class LancamentosComponent implements OnInit {
       participantesIds: [],
       devedores: [],
     });
-    this.form.markAsUntouched();
+    // limpar estados visuais de validação (remover contornos/vermelhos)
+    Object.keys(this.form.controls).forEach((name) => {
+      const ctrl = this.form.get(name);
+      if (!ctrl) return;
+      // remove erros e reseta estados de toque/pristine
+      try {
+        ctrl.setErrors(null);
+      } catch (e) {
+        // alguns controles podem lançar se estiverem desabilitados — ignore
+      }
+      ctrl.markAsPristine();
+      ctrl.markAsUntouched();
+    });
+    // garante que o FormGroup reavalie seu estado
+    this.form.updateValueAndValidity({ emitEvent: false });
     this.submitted = false;
+    // também resetar o estado do FormGroupDirective para remover marca de "submitted"
+    try {
+      this.formDirective?.resetForm();
+    } catch (e) {
+      // ignore se não houver directive disponível
+    }
   }
 
   trackById(_index: number, item: { id: number | string }): number | string {

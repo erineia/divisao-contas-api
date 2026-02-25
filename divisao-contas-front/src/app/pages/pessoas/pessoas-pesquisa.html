@@ -8,36 +8,21 @@
           <!-- CAMPO (em cima) -->
           <div class="filter-row">
             <div class="filter-field">
-              <label class="form-label" for="filtroNome">Nome Pessoa</label>
-
               <mat-form-field appearance="outline" class="form-field">
-                <input
-                  matInput
-                  id="filtroNome"
-                  placeholder="Nome Pessoa"
-                  formControlName="nome"
-                />
+                <input matInput id="filtroNome" placeholder="Informe o nome da pessoa" formControlName="nome" />
               </mat-form-field>
             </div>
           </div>
 
           <!-- BOTÕES (embaixo) -->
           <div class="filter-actions">
-            <div class="actions-left">
-              <button type="button" class="btn-custom btn-novo" (click)="novo()">
-                Novo
-              </button>
-            </div>
+            <button type="button" class="btn-custom btn-novo" (click)="novo()">Novo</button>
 
-            <div class="actions-right">
-              <button type="button" class="btn-custom btn-limpar" (click)="limpar()">
-                Limpar
-              </button>
+            <button type="button" class="btn-custom btn-limpar" (click)="limpar()">Limpar</button>
 
-              <button type="button" class="btn-custom btn-pesquisar" (click)="pesquisar()">
-                Pesquisar
-              </button>
-            </div>
+            <button type="button" class="btn-custom btn-pesquisar" (click)="pesquisar()">
+              Pesquisar
+            </button>
           </div>
         </form>
       </div>

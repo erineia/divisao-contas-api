@@ -7,7 +7,6 @@
         <form [formGroup]="form" (ngSubmit)="pesquisar()">
           <div class="filter-row">
             <div class="filter-field">
-              <label class="form-label" for="descricaoFiltro">Descrição</label>
               <mat-form-field appearance="outline" class="form-field">
                 <input
                   matInput
@@ -15,22 +14,18 @@
                   type="text"
                   formControlName="descricao"
                   autocomplete="off"
-                  placeholder="Filtrar por descrição"
+                  placeholder="Informe uma descrição"
                 />
               </mat-form-field>
             </div>
 
             <div class="filter-field">
-              <label class="form-label" for="grupoFiltro">Grupo</label>
               <mat-form-field appearance="outline" class="form-field">
-                <input
-                  matInput
-                  id="grupoFiltro"
-                  type="text"
-                  formControlName="grupoNome"
-                  autocomplete="off"
-                  placeholder="Filtrar por grupo"
-                />
+                <mat-label>Grupo</mat-label>
+                <mat-select formControlName="grupoId" panelClass="pessoas-panel">
+                  <mat-option [value]="null">Todos</mat-option>
+                  <mat-option *ngFor="let g of grupos; trackBy: trackById" [value]="g.id">{{ g.nome }}</mat-option>
+                </mat-select>
               </mat-form-field>
             </div>
           </div>

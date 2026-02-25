@@ -46,23 +46,10 @@
   margin-bottom: 6px;
 }
 
-.form-field {
-  width: 100%;
-  display: block;
-}
-
-.form-field .mat-mdc-form-field {
-  width: 100%;
-}
-
-.form-field .mat-mdc-form-field-infix {
-  width: 100%;
-  min-width: 0;
-}
-
 .filter-actions {
   display: flex;
   gap: 12px;
+  align-items: flex-end; /* alinha os botões à base do input */
 }
 
 .btn-novo {

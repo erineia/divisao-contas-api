@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MaterialModule } from '../../material-module';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { NotificationService } from '../../shared/notification.service';
 import { finalize } from 'rxjs';
 import { GrupoResponse, GrupoService } from './grupo.service';
 
@@ -19,16 +20,18 @@ export class GrupoComponent implements OnInit {
   salvando = false;
   modoEdicao = false;
   grupoId: number | null = null;
+  submitted = false;
 
   constructor(
     private fb: FormBuilder,
     private grupoService: GrupoService,
     private snackBar: MatSnackBar,
+    private notification: NotificationService,
     private route: ActivatedRoute,
     private router: Router,
   ) {
     this.form = this.fb.group({
-      nome: ['', [Validators.required, Validators.minLength(2)]],
+      nome: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(80)]],
     });
   }
 
@@ -63,21 +66,24 @@ export class GrupoComponent implements OnInit {
 
   limpar(): void {
     this.form.reset();
+    this.submitted = false;
   }
 
   salvar(): void {
     if (this.salvando) return;
 
+    this.submitted = true;
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.snackBar.open('Informe o nome do grupo.', 'OK', { duration: 3000 });
+      this.notification.warn('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 
     const nome = String(this.form.value?.nome ?? '').trim();
     if (!nome) {
       this.form.markAllAsTouched();
-      this.snackBar.open('Informe o nome do grupo.', 'OK', { duration: 3000 });
+      this.notification.warn('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
 

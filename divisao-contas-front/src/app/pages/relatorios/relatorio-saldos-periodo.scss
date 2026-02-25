@@ -15,6 +15,84 @@
   white-space: nowrap;
 }
 
+/* Ajuste de fonte: labels e erros um pouco menores para reduzir poluição visual */
+.relatorio-filtros .mat-form-field-label,
+.filtros-row .mat-form-field-label {
+  font-size: 13px; /* label menor */
+}
+
+.relatorio-filtros .mat-form-field-subscript-wrapper .mat-error,
+.filtros-row .mat-form-field-subscript-wrapper .mat-error,
+.relatorio-filtros mat-form-field .mat-error,
+.filtros-row mat-form-field .mat-error {
+  font-size: 9px !important; /* mensagem de erro ainda menor */
+  line-height: 1.1 !important;
+  margin-top: 2px !important;
+  font-weight: 400 !important;
+  opacity: 0.95 !important;
+}
+
+/* fallback mais específico usando ::ng-deep para garantir aplicação */
+.relatorio-filtros ::ng-deep .mat-error {
+  font-size: 8px !important;
+  line-height: 1.05 !important;
+  margin-top: 2px !important;
+  font-weight: 400 !important;
+  opacity: 0.95 !important;
+}
+
+/* coloca os botões em uma nova linha abaixo dos campos do filtro */
+.filtros-row .actions-right {
+  grid-column: 1 / -1;
+  justify-self: end;
+  margin-top: 8px;
+}
+
+/* cores e estilos dos botões */
+.actions-right .btn-clear.mat-flat-button,
+.actions-right .btn-clear.mat-flat-button .mat-button-wrapper {
+  background-color: #ef4444 !important; /* vermelho preenchido */
+  color: #ffffff !important;
+  border: none !important;
+}
+.actions-right .btn-clear.mat-flat-button:hover {
+  background-color: #e53e3e !important;
+}
+.actions-right .btn-clear.mat-flat-button:disabled {
+  opacity: 0.65 !important;
+}
+
+/* Export button filled blue */
+.actions-right .btn-export.mat-flat-button,
+.actions-right .btn-export.mat-flat-button .mat-button-wrapper {
+  background-color: #2563eb !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+.actions-right .btn-export.mat-flat-button:hover {
+  background-color: #1e40af !important;
+}
+.actions-right .btn-export.mat-flat-button:disabled {
+  opacity: 0.65 !important;
+}
+
+.actions-right button.btn-generate.mat-flat-button,
+.actions-right button.btn-generate.mat-flat-button .mat-button-wrapper {
+  background-color: #16a34a !important; /* verde */
+  color: #ffffff !important;
+}
+.actions-right .btn-generate.mat-flat-button:disabled {
+  opacity: 0.6 !important;
+}
+
+.actions-right .btn-export.mat-stroked-button {
+  color: #2563eb !important; /* azul */
+  border-color: rgba(37,99,235,0.95) !important;
+}
+.actions-right .btn-export.mat-stroked-button:hover {
+  background: rgba(37,99,235,0.08) !important;
+}
+
 .resumo-cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -119,4 +197,29 @@
   }
 
   .duas-colunas { grid-template-columns: 1fr; }
+}
+
+/* Mobile: empilha os botões da actions-right e ocupa 100% da largura */
+@media (max-width: 600px) {
+  .filtros-row .actions-right {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .filtros-row .actions-right button {
+    width: 100%;
+  }
+}
+
+/* High-specificity override for this component to avoid red labels/values */
+.card-primary .card-body .mat-form-field.mat-form-field-invalid .mat-form-field-label,
+.card-primary .card-body .mat-form-field.mat-form-field-invalid .mat-input-element,
+.card-primary .card-body .mat-mdc-form-field.mat-mdc-form-field-invalid .mat-mdc-form-field-label,
+.card-primary .card-body .mat-mdc-form-field.mat-mdc-form-field-invalid .mat-mdc-input-element,
+.card-primary .card-body .mat-form-field.mat-form-field-invalid .mat-select-value,
+.card-primary .card-body .mat-mdc-form-field.mat-mdc-form-field-invalid .mat-mdc-select-value {
+  color: rgba(255,255,255,0.87) !important;
+  fill: currentColor !important;
 }
