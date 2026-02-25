@@ -86,27 +86,20 @@ a.menu-item .mat-mdc-button-ripple {
 
 /* hover: cor diferente */
 a.menu-item:hover {
-  background: rgba(63, 107, 255, 0.12) !important;
-  color: #ffffff !important;
+  background: transparent !important;
+  color: #3f6bff !important;
 }
 
 /* ativo: destaque */
 a.menu-item.active {
-  background: rgba(63, 107, 255, 0.20) !important;
-  color: #ffffff !important;
+  background: transparent !important;
+  color: #3f6bff !important;
   font-weight: 600;
 }
 
 /* barrinha lateral no ativo */
 a.menu-item.active::before {
-  content: "";
-  position: absolute;
-  left: 10px;
-  top: 8px;
-  bottom: 8px;
-  width: 3px;
-  border-radius: 2px;
-  background: #3f6bff;
+  display: none !important;
 }
 
 /* =========================
@@ -172,13 +165,13 @@ a.menu-item {
 
 /* hover */
 a.menu-item:hover {
-  background: rgba(63, 107, 255, 0.12) !important;
-  color: #fff !important;
+  background: transparent !important;
+  color: #3f6bff !important;
 }
 
 /* ativo */
 a.menu-item.active {
-  background: rgba(63, 107, 255, 0.20) !important;
-  color: #fff !important;
+  background: transparent !important;
+  color: #3f6bff !important;
   font-weight: 600;
 }
