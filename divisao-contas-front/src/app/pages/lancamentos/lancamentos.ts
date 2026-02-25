@@ -102,18 +102,25 @@ export class LancamentosComponent implements OnInit {
       const [dia, mes, ano] = lanc.data.split('/');
       dataISO = `${ano}-${mes.padStart(2, '0')}-${dia.padStart(2, '0')}`;
     }
-    this.form.patchValue({
-      descricao: lanc.descricao,
-      data: dataISO,
-      valor: lanc.valor,
-      pagadorId: lanc.pagador?.id ?? null,
-      grupoId: lanc.grupoId ?? null,
-      divide: lanc.divide ?? true,
-      participantesIds: Array.isArray(lanc.participantes) ? lanc.participantes.map((p) => p.pessoaId).filter(Boolean) : [],
-      devedores: Array.isArray(lanc.devedores) ? lanc.devedores.map((d) => d.pessoaId).filter(Boolean) : [],
+
+    // Deferir o patchValue para o próximo macrotask evita erros de
+    // ExpressionChangedAfterItHasBeenCheckedError causados por atualizações de
+    // estado dentro do ciclo de change detection.
+    setTimeout(() => {
+      this.form.patchValue({
+        descricao: lanc.descricao,
+        data: dataISO,
+        valor: lanc.valor,
+        pagadorId: lanc.pagador?.id ?? null,
+        grupoId: lanc.grupoId ?? null,
+        divide: lanc.divide ?? true,
+        participantesIds: Array.isArray(lanc.participantes) ? lanc.participantes.map((p) => p.pessoaId).filter(Boolean) : [],
+        devedores: Array.isArray(lanc.devedores) ? lanc.devedores.map((d) => d.pessoaId).filter(Boolean) : [],
+      });
+
+      this.form.markAsUntouched();
+      this.submitted = false;
     });
-    this.form.markAsUntouched();
-    this.submitted = false;
   }
 
   salvar(): void {
@@ -124,7 +131,20 @@ export class LancamentosComponent implements OnInit {
     }
 
     this.salvando = true;
-    const req = this.form.value as LancamentoCreateRequest;
+    // Construir explicitamente o payload para garantir formato esperado pela API.
+    const fv = this.form.value as any;
+    const req: any = {
+      descricao: fv.descricao,
+      data: fv.data,
+      valor: fv.valor,
+      pagadorId: fv.pagadorId,
+      grupoId: fv.grupoId,
+      divide: fv.divide,
+      participantesIds: Array.isArray(fv.participantesIds) ? fv.participantesIds : [],
+      // A API espera lista de objetos {pessoaId, valor} em `devedores` quando divide=false.
+      // Para evitar 400 quando divide=true, sempre envie array vazio nesse caso.
+      devedores: fv.divide ? [] : (Array.isArray(fv.devedores) ? fv.devedores : []),
+    } as LancamentoCreateRequest;
 
     const acao$ = this.modoEdicao && this.lancamentoId
       ? this.lancamentoService.atualizar(this.lancamentoId, req)

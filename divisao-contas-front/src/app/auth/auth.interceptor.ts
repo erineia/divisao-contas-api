@@ -10,18 +10,39 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = localStorage.getItem('token');
-    if (!token) return next.handle(req);
+    try {
+      const token = localStorage.getItem('token');
 
-    // Evita duplicar header caso já exista.
-    if (req.headers.has('Authorization')) return next.handle(req);
+      // Não anexa token em chamadas de login/registro
+      if (req.url.includes('/auth/login') || req.url.includes('/auth/register')) {
+        console.debug('AuthInterceptor: skip auth for', req.url);
+        return next.handle(req);
+      }
 
-    const authReq = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      if (!token) {
+        console.debug('AuthInterceptor: no token found for', req.url);
+        return next.handle(req);
+      }
 
-    return next.handle(authReq);
+      // Evita duplicar header caso já exista.
+      if (req.headers.has('Authorization')) {
+        console.debug('AuthInterceptor: Authorization header already present for', req.url);
+        return next.handle(req);
+      }
+
+      // Apenas loga a URL, não o token em si
+      console.debug('AuthInterceptor: attaching Authorization header to', req.url);
+
+      const authReq = req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return next.handle(authReq);
+    } catch (e) {
+      console.warn('AuthInterceptor error', e);
+      return next.handle(req);
+    }
   }
 }

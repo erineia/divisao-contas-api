@@ -154,17 +154,17 @@ public class RelatorioService {
   }
 
   @Transactional(readOnly = true)
-  public CsvResult saldosPeriodoCsv(String dataInicio, String dataFim) {
+  public CsvResult saldosPeriodoCsv(String dataInicio, String dataFim, Long grupoId) {
     validarDataBr(dataInicio);
     validarDataBr(dataFim);
 
-    List<SaldoPessoaResponse> saldos = saldoService.saldoPorPeriodo(dataInicio, dataFim, null)
+    List<SaldoPessoaResponse> saldos = saldoService.saldoPorPeriodo(dataInicio, dataFim, grupoId)
         .stream()
         .filter(s -> s.getTotalPago().compareTo(BigDecimal.ZERO) != 0
             || s.getValorDevido().compareTo(BigDecimal.ZERO) != 0
             || s.getTotalAReceber().compareTo(BigDecimal.ZERO) != 0)
         .toList();
-    List<TransferenciaResponse> quemDeve = saldoService.quemDevePeriodo(dataInicio, dataFim, null);
+    List<TransferenciaResponse> quemDeve = saldoService.quemDevePeriodo(dataInicio, dataFim, grupoId);
 
     StringBuilder csv = new StringBuilder();
 

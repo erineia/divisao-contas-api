@@ -21,9 +21,10 @@ export class AuthService {
     // Endpoint real da API: POST /auth/login
     return this.http.post<any>(`${this.apiUrl}/auth/login`, data).pipe(
       tap((response) => {
-        // Se a API devolver token ou usuário, salve aqui se precisar
-        if (response?.token) {
-          localStorage.setItem('token', response.token);
+        // Suporta diferentes formatos de resposta (token, accessToken, jwt)
+        const tokenValue = response?.token ?? response?.accessToken ?? response?.jwt;
+        if (tokenValue) {
+          localStorage.setItem('token', tokenValue);
         }
       })
     );

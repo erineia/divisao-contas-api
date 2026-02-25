@@ -1,0 +1,39 @@
+<div class="page">
+  <div class="page__container">
+    <div class="breadcrumb"></div>
+    <div class="card card-primary">
+      <div class="card-header">Relatório Mensal</div>
+      <div class="card-body">
+        <form class="relatorio-filtros" [formGroup]="filtrosForm">
+          <div class="filtros-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Data Inicial</mat-label>
+              <input matInput [matDatepicker]="pickerInicio" formControlName="dataInicio" required>
+              <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+              <mat-datepicker #pickerInicio></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Data Final</mat-label>
+              <input matInput [matDatepicker]="pickerFim" formControlName="dataFim" required>
+              <mat-datepicker-toggle matSuffix [for]="pickerFim"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFim></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Grupo</mat-label>
+              <mat-select formControlName="grupoId">
+                <mat-option [value]="null">Todos</mat-option>
+                <mat-option *ngFor="let grupo of grupos" [value]="grupo.id">{{ grupo.nome }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-flat-button color="primary" type="button" (click)="exportarCSV()">
+              Exportar CSV
+            </button>
+          </div>
+        </form>
+        <div class="relatorio-conteudo">
+          <p>Utilize o botão Exportar CSV para baixar o relatório mensal diretamente da API.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

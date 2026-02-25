@@ -17,6 +17,7 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 const MATERIAL_MODULES = [
   MatToolbarModule,
@@ -34,7 +35,9 @@ const MATERIAL_MODULES = [
   MatOptionModule,
   MatDatepickerModule,
   MatNativeDateModule,
-  MatProgressSpinnerModule, // ✅ ADICIONADO
+  MatProgressSpinnerModule, 
+  MatProgressBarModule, 
+  MatNativeDateModule,
 ];
 
 @NgModule({

@@ -12,9 +12,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class LancamentoService {
+
+  private static final Logger log = LoggerFactory.getLogger(LancamentoService.class);
 
   private final LancamentoRepository lancamentoRepository;
   private final PessoaRepository pessoaRepository;
@@ -67,6 +71,8 @@ public class LancamentoService {
 
   @Transactional
   public LancamentoResponse atualizar(Long id, LancamentoCreateRequest req) {
+    log.info("Atualizar lancamento id={} pagadorId={} participantesIds={}", id, req.getPagadorId(),
+        req.getParticipantesIds());
     Lancamento existente = lancamentoRepository.findById(id)
         .orElseThrow(() -> new NotFoundException("Lançamento não encontrado."));
 
@@ -104,6 +110,15 @@ public class LancamentoService {
     rateioRepository.deleteByLancamentoId(id);
     gravarRateiosConformeRegra(salvo, req);
 
+    // Garantia adicional: se o cliente solicitou divisão e NÃO incluiu o pagador
+    // entre os participantes, removemos qualquer rateio residual do pagador.
+    if (req.isDivide()) {
+      List<Long> ids = req.getParticipantesIds();
+      if (ids != null && !ids.contains(salvo.getPagador().getId())) {
+        rateioRepository.deleteByLancamentoIdAndPessoaId(salvo.getId(), salvo.getPagador().getId());
+      }
+    }
+
     return toResponse(salvo, req.isDivide());
   }
 
@@ -132,11 +147,6 @@ public class LancamentoService {
         .map(l -> {
           List<LancamentoRateio> rateios = rateioRepository.findByLancamentoId(l.getId());
 
-          // Se você NÃO tem coluna divide, mantém sua heurística.
-          boolean dividido = rateios.stream().anyMatch(r -> r.getPessoa() != null && r.getPessoa().getId() != null &&
-              l.getPagador() != null && l.getPagador().getId() != null &&
-              r.getPessoa().getId().equals(l.getPagador().getId()));
-
           LancamentoResponse resp = new LancamentoResponse();
           resp.setId(l.getId());
           resp.setDescricao(l.getDescricao());
@@ -146,20 +156,20 @@ public class LancamentoService {
             resp.setGrupoId(l.getGrupo().getId());
             resp.setGrupoNome(l.getGrupo().getNome());
           }
-          resp.setDivide(dividido);
+          // Se houver rateios, preenche ambos participantes/devedores para o cliente.
+          // Nota: a regra de divisão agora respeita `participantesIds` enviados pelo
+          // cliente;
+          // não adicionamos mais o pagador automaticamente.
+          resp.setDivide(!rateios.isEmpty());
           resp.setPagador(new PessoaResponse(l.getPagador().getId(), l.getPagador().getNome()));
-
-          if (dividido) {
-            resp.setParticipantes(rateios.stream()
-                .map(r -> new LancamentoPessoaValorResponse(
-                    r.getPessoa().getId(), r.getPessoa().getNome(), r.getValorDevido()))
-                .toList());
-          } else {
-            resp.setDevedores(rateios.stream()
-                .map(r -> new LancamentoPessoaValorResponse(
-                    r.getPessoa().getId(), r.getPessoa().getNome(), r.getValorDevido()))
-                .toList());
-          }
+          resp.setParticipantes(rateios.stream()
+              .map(r -> new LancamentoPessoaValorResponse(r.getPessoa().getId(), r.getPessoa().getNome(),
+                  r.getValorDevido()))
+              .toList());
+          resp.setDevedores(rateios.stream()
+              .map(r -> new LancamentoPessoaValorResponse(r.getPessoa().getId(), r.getPessoa().getNome(),
+                  r.getValorDevido()))
+              .toList());
 
           return resp;
         })
@@ -191,10 +201,9 @@ public class LancamentoService {
       Set<Long> uniq = new HashSet<>(ids);
       ids = new ArrayList<>(uniq);
 
-      if (!ids.contains(req.getPagadorId()))
-        ids.add(req.getPagadorId());
-      if (ids.size() < 2)
-        throw new IllegalArgumentException("Para dividir, é necessário pelo menos 2 pessoas (incluindo o pagador).");
+      // Não adicionar automaticamente o pagador aos participantes.
+      // A divisão será feita apenas entre os `participantesIds` informados pelo
+      // usuário.
 
       List<Pessoa> participantes = pessoaRepository.findAllById(ids);
       if (participantes.size() != ids.size())

@@ -43,6 +43,7 @@ public class ApiExceptionHandler {
   @ExceptionHandler(IllegalArgumentException.class)
   public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex,
       jakarta.servlet.http.HttpServletRequest req) {
+    log.warn("Requisição inválida em {}: {}", req.getRequestURI(), ex.getMessage(), ex);
     return build(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI());
   }
 

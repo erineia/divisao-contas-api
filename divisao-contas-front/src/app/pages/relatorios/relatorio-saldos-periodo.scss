@@ -1,0 +1,91 @@
+.filtros-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr auto; // <-- 4 colunas (3 campos + ações)
+  gap: 16px;
+  align-items: end;
+}
+.field {
+  width: 100%;
+}
+.actions-right {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.resumo-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.resumo-card {
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.resumo-card .label { opacity: .75; font-size: 12px; }
+.resumo-card .value { font-weight: 700; margin-top: 4px; }
+
+.secao { margin-top: 18px; }
+.secao h3 { margin: 0 0 10px 0; }
+
+.lista-saldos, .lista-transferencias {
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.saldo-row, .transfer-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  align-items: center;
+}
+.saldo-row:first-child, .transfer-row:first-child { border-top: none; }
+
+.saldo-row {
+  grid-template-columns: 1fr auto auto;
+}
+
+.saldo-row .valor { font-weight: 700; min-width: 120px; text-align: right; }
+.saldo-row .valor.positivo { color: #22c55e; }
+.saldo-row .valor.negativo { color: #ef4444; }
+
+.saldo-row .tag {
+  opacity: .85;
+  font-size: 12px;
+  border: 1px solid rgba(255,255,255,.15);
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.transfer-row {
+  grid-template-columns: 1fr 30px 1fr auto;
+}
+.transfer-row .seta { text-align: center; opacity: .8; }
+.transfer-row .valor { font-weight: 700; min-width: 120px; text-align: right; }
+
+@media (max-width: 900px) {
+  .filtros-row {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-right {
+    justify-content: stretch;
+  }
+
+  .actions-right button {
+    flex: 1;
+  }
+
+  .resumo-cards {
+    grid-template-columns: 1fr;
+  }
+}

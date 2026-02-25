@@ -11,6 +11,8 @@ import { PagamentosPesquisaComponent } from './pages/pagamentos/pagamentos-pesqu
 import { GrupoComponent } from './pages/grupo/grupo';
 import { GruposPesquisaComponent } from './pages/grupo/grupo-pesquisa';
 import { RelatoriosComponent } from './pages/relatorios/relatorios';
+import { RelatorioMensalComponent } from './pages/relatorios/relatorio-mensal';
+import { RelatorioSaldosPeriodoComponent } from './pages/relatorios/relatorio-saldos-periodo';
 import { PessoasPesquisaComponent } from './pages/pessoas/pessoas-pesquisa';
 
 const routes: Routes = [
@@ -41,6 +43,8 @@ const routes: Routes = [
       { path: 'grupos/editar/:id', component: GrupoComponent },
       { path: 'grupos/pesquisar', component: GruposPesquisaComponent },
       { path: 'relatorios', component: RelatoriosComponent },
+      { path: 'relatorios/mensal', component: RelatorioMensalComponent },
+      { path: 'relatorios/saldos-periodo', component: RelatorioSaldosPeriodoComponent },
     ],
   },
 

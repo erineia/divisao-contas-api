@@ -1,0 +1,150 @@
+<div class="page">
+  <div class="page__container">
+    <div class="card card-primary">
+      <div class="card-header">Relatório de Saldos por Período</div>
+
+      <div class="card-body">
+        <form class="relatorio-filtros" [formGroup]="filtrosForm">
+          <div class="filtros-row">
+            <!-- Grupo -->
+            <mat-form-field appearance="outline" class="field">
+              <mat-label>Grupo</mat-label>
+              <mat-select formControlName="grupo" placeholder="Selecione o grupo">
+                <mat-option [value]="null">Todos</mat-option>
+                <mat-option *ngFor="let g of grupos" [value]="g.id">{{ g.nome }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <!-- Data Inicial -->
+            <mat-form-field appearance="outline" class="field">
+              <mat-label>Data Inicial</mat-label>
+              <input
+                matInput
+                [matDatepicker]="pickerInicio"
+                formControlName="dataInicio"
+                autocomplete="off"
+              />
+              <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+              <mat-datepicker #pickerInicio></mat-datepicker>
+
+              <mat-error *ngIf="filtrosForm.get('dataInicio')?.hasError('required')">
+                Data inicial é obrigatória.
+              </mat-error>
+              <mat-error *ngIf="filtrosForm.get('dataInicio')?.hasError('matDatepickerParse')">
+                Data inválida. Use dd/MM/aaaa.
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Data Final -->
+            <mat-form-field appearance="outline" class="field">
+              <mat-label>Data Final</mat-label>
+              <input
+                matInput
+                [matDatepicker]="pickerFim"
+                formControlName="dataFim"
+                autocomplete="off"
+              />
+              <mat-datepicker-toggle matSuffix [for]="pickerFim"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFim></mat-datepicker>
+
+              <mat-error *ngIf="filtrosForm.get('dataFim')?.hasError('required')">
+                Data final é obrigatória.
+              </mat-error>
+              <mat-error *ngIf="filtrosForm.get('dataFim')?.hasError('matDatepickerParse')">
+                Data inválida. Use dd/MM/aaaa.
+              </mat-error>
+
+              <!-- (opcional) erro do range no formGroup -->
+              <mat-error *ngIf="filtrosForm.hasError('dateRangeInvalid')">
+                Data final deve ser maior ou igual à inicial.
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Ações -->
+            <div class="actions-right">
+              <button mat-stroked-button type="button" (click)="limpar()" [disabled]="carregando">
+                Limpar
+              </button>
+
+              <button
+                mat-flat-button
+                color="primary"
+                type="button"
+                (click)="gerarRelatorio()"
+                [disabled]="carregando || filtrosForm.invalid"
+              >
+                Gerar
+              </button>
+
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="exportarCSV()"
+                [disabled]="carregando || !relatorioGerado"
+              >
+                Exportar CSV
+              </button>
+            </div>
+          </div>
+        </form>
+        <mat-progress-bar *ngIf="carregando" mode="indeterminate"></mat-progress-bar>
+
+        <!-- Resumo -->
+        <div class="relatorio-conteudo" *ngIf="relatorioGerado && !carregando">
+          <div class="resumo-cards">
+            <div class="resumo-card">
+              <div class="label">Período</div>
+              <div class="value">{{ periodoLabel }}</div>
+            </div>
+            <div class="resumo-card">
+              <div class="label">Total do período</div>
+              <div class="value">{{ totalPeriodo | currency: 'BRL' }}</div>
+            </div>
+            <div class="resumo-card">
+              <div class="label">Lançamentos</div>
+              <div class="value">{{ qtdLancamentos }}</div>
+            </div>
+          </div>
+
+          <!-- Saldos por pessoa -->
+          <div class="secao">
+            <h3>Saldos por pessoa</h3>
+            <div class="lista-saldos">
+              <div class="saldo-row" *ngFor="let s of saldosDisplay">
+                <div class="nome">{{ s.nome }}</div>
+                <div class="valor" [class.positivo]="s.valor > 0" [class.negativo]="s.valor < 0">
+                  {{ s.valor | currency: 'BRL' }}
+                </div>
+                <div class="tag" *ngIf="s.valor > 0">Recebe</div>
+                <div class="tag" *ngIf="s.valor < 0">Deve</div>
+                <div class="tag" *ngIf="s.valor === 0">Quitado</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quem deve para quem -->
+          <div class="secao">
+            <h3>Quem deve para quem</h3>
+
+            <div class="sem-registros" *ngIf="transferencias.length === 0">
+              Nenhuma transferência necessária (tudo quitado).
+            </div>
+
+            <div class="lista-transferencias" *ngIf="transferencias.length > 0">
+              <div class="transfer-row" *ngFor="let t of transferencias">
+                <div class="de">{{ t.devedor }}</div>
+                <div class="seta">→</div>
+                <div class="para">{{ t.credor }}</div>
+                <div class="valor">{{ t.valor | currency: 'BRL' }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="relatorio-conteudo" *ngIf="!relatorioGerado && !carregando">
+          <p>Selecione o período e clique em <b>Gerar</b> para visualizar quem deve para quem.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
