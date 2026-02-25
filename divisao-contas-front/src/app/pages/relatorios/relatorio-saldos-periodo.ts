@@ -49,6 +49,7 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
   saldos: SaldoPessoa[] = [];
   saldosDisplay: SaldoPessoa[] = [];
   transferencias: Transferencia[] = [];
+  transferenciasAposAbatimento: Transferencia[] = [];
   totalPeriodo = 0;
   qtdLancamentos = 0;
 
@@ -199,11 +200,10 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
                 this.transferencias = this.computePairwiseDebtsFromLancamentos(rawLanc);
                 this.totalPeriodo = this.saldos.filter((s) => s.valor > 0).reduce((acc, s) => acc + s.valor, 0);
 
-                // LOG TEMPORÁRIO: inspecionar valores no console para debugging
-                console.log('Relatorio - lancamentos usados (rawLanc):', rawLanc);
-                console.log('Relatorio - saldos (net):', this.saldos);
-                console.log('Relatorio - saldosDisplay (paid):', this.saldosDisplay);
-                console.log('Relatorio - transferencias:', this.transferencias);
+                // valores calculados (logs de depuração removidos)
+
+                // Calcula transferências após abatimento a partir das transferencias agregadas
+                this.transferenciasAposAbatimento = this.computeRemainingAfterAbatimento(this.transferencias);
 
                 this.relatorioGerado = this.saldos.length > 0;
                 this.cdr.markForCheck();
@@ -401,14 +401,16 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
 
     if (this.lancamentos?.length) {
       for (const l of this.lancamentos) {
+        const valorNum = Number(l.valor) || 0;
+        const valorPorPessoaNum = Number(l.valorPorPessoa) || 0;
         linhas.push(
           [
             l.descricao,
             this.toPtDate(l.data),
-            this.toPtMoney(l.valor),
+            this.toPtMoney(valorNum),
             l.quemPagou,
             Array.isArray(l.divididoCom) ? l.divididoCom.join(', ') : l.divididoCom,
-            this.toPtMoney(l.valorPorPessoa),
+            this.toPtMoney(valorPorPessoaNum),
             l.obs ?? '',
           ]
             .map(this.escCsv.bind(this))
@@ -419,13 +421,13 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
 
     linhas.push('');
 
-    // Seção: Saldos por pessoa (o que é exibido na tela)
-    linhas.push(this.escCsv('Saldos por pessoa'));
-    linhas.push(['Nome', 'Valor', 'Status'].map(this.escCsv.bind(this)).join(sep));
-    if (this.saldos?.length) {
-      for (const s of this.saldos) {
-        const status = s.valor > 0 ? 'Recebe' : s.valor < 0 ? 'Deve' : 'Quitado';
-        linhas.push([s.nome, this.toPtMoney(s.valor), status].map(this.escCsv.bind(this)).join(sep));
+    // Seção: Total Gasto por Pessoa (usar os valores exibidos na tela)
+    linhas.push(this.escCsv('Total Gasto por Pessoa'));
+    linhas.push(['Nome', 'Total Gasto'].map(this.escCsv.bind(this)).join(sep));
+    const saldosParaCsv = (this.saldosDisplay && this.saldosDisplay.length) ? this.saldosDisplay : this.saldos;
+    if (saldosParaCsv?.length) {
+      for (const s of saldosParaCsv) {
+        linhas.push([s.nome, this.toPtMoney(s.valor)].map(this.escCsv.bind(this)).join(sep));
       }
     } else {
       linhas.push(this.escCsv('Nenhum saldo para o período'));
@@ -444,11 +446,52 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
       linhas.push(this.escCsv('Nenhuma transferencia necessaria (tudo quitado)'));
     }
 
-    return linhas.join('\n');
+    linhas.push('');
+    linhas.push(this.escCsv('Quem deve para quem (abatimentos)'));
+    linhas.push(['Deve', 'Recebe', 'Valor'].map(this.escCsv.bind(this)).join(sep));
+    if (this.transferenciasAposAbatimento?.length) {
+      for (const t of this.transferenciasAposAbatimento) {
+        linhas.push([t.devedor, t.credor, this.toPtMoney(t.valor)].map(this.escCsv.bind(this)).join(sep));
+      }
+    } else {
+      linhas.push(this.escCsv('Nenhuma transferencia necessaria (tudo quitado)'));
+    }
+
+    // Normaliza qualquer célula numérica que tenha sobrado sem formatação
+    const normalized = linhas.map((line) => {
+      if (!line) return line;
+      // divide pelas colunas do CSV (sep)
+      const cols = line.split(sep);
+      const mapped = cols.map((c) => {
+        const raw = (c || '').trim();
+
+        // se estiver vazio ou for texto (contendo letras) não altera
+        if (!raw) return c;
+        // remove aspas externas para analisar o conteúdo
+        const unquoted = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1).replace(/""/g, '"') : raw;
+
+        // corresponde numeros com ponto decimal (ex: 1322 or 17.5)
+        if (/^-?\d+(?:\.\d+)?$/.test(unquoted)) {
+          const n = Number(unquoted);
+          return this.escCsv(this.toPtMoney(n));
+        }
+
+        // corresponde numeros com vírgula decimal (ex: 17,5) - normaliza para duas casas
+        if (/^-?\d+(?:,\d+)?$/.test(unquoted)) {
+          const n = this.parseNumberPtBr(unquoted);
+          if (n !== null) return this.escCsv(this.toPtMoney(n));
+        }
+
+        return c;
+      });
+      return mapped.join(sep);
+    });
+
+    return normalized.join('\n');
   }
 
 
-  private toPtMoney(n: number): string {
+  public toPtMoney(n: number): string {
     return (n ?? 0).toFixed(2).replace('.', ',');
   }
 
@@ -691,6 +734,25 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
   // para cada lançamento, cada participante (ou cada devedor quando divide=false)
   // gera uma dívida em direção ao pagador pelo valor devido naquele lançamento.
   private computePairwiseDebtsFromLancamentos(lancamentos: LancamentoResponse[]): Transferencia[] {
+    const { agg, mapNames } = this.computePairwiseAggFromLancamentos(lancamentos);
+    const out: Transferencia[] = Object.keys(agg).map((k) => {
+      const [fromIdStr, toIdStr] = k.split('-');
+      const fromId = Number(fromIdStr);
+      const toId = Number(toIdStr);
+      return {
+        devedor: mapNames[fromId] ?? String(fromId),
+        credor: mapNames[toId] ?? String(toId),
+        valor: this.round2(agg[k] || 0),
+      } as Transferencia;
+    });
+
+    // ordena por devedor para exibição previsível
+    out.sort((a, b) => a.devedor.localeCompare(b.devedor) || b.valor - a.valor);
+    return out;
+  }
+
+  // Retorna um mapa agregando dívidas por par e o mapa de nomes usado
+  private computePairwiseAggFromLancamentos(lancamentos: LancamentoResponse[]): { agg: Record<string, number>; mapNames: Record<number, string> } {
     const mapNames: Record<number, string> = {};
     const agg: Record<string, number> = {}; // key: `${devedorId}-${credorId}`
 
@@ -708,7 +770,6 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
       const participants = (l.participantes as any[]) || [];
 
       if (participants && participants.length) {
-        // Se participantes têm campo `valor`, usamos; senão fazemos divisão igual
         const explicit = participants.every((p) => p.valor !== undefined && p.valor !== null && !isNaN(Number(p.valor)));
         if (explicit) {
           for (const p of participants) {
@@ -724,7 +785,6 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
           }
         }
       } else {
-        // quando não há participantes (não divide), pode haver devedores
         const devedores = (l as any).devedores || [];
         if (devedores && devedores.length) {
           for (const d of devedores) {
@@ -735,19 +795,44 @@ export class RelatorioSaldosPeriodoComponent implements OnInit {
       }
     }
 
-    const out: Transferencia[] = Object.keys(agg).map((k) => {
-      const [fromIdStr, toIdStr] = k.split('-');
-      const fromId = Number(fromIdStr);
-      const toId = Number(toIdStr);
-      return {
-        devedor: mapNames[fromId] ?? String(fromId),
-        credor: mapNames[toId] ?? String(toId),
-        valor: this.round2(agg[k] || 0),
-      } as Transferencia;
-    });
+    return { agg, mapNames };
+  }
 
-    // ordena por devedor para exibição previsível
-    out.sort((a, b) => a.devedor.localeCompare(b.devedor) || b.valor - a.valor);
-    return out;
+  // Calcula abatimentos (mutualizações) a partir dos lançamentos e retorna
+  // both: lista de abatimentos e lista de transferências remanescentes após abatimento
+  // computeAbatimentosFromLancamentos removed — abatimentos not exposed separately
+
+  // Calcula abatimentos a partir da lista de transferências (por nome)
+  private computeRemainingAfterAbatimento(transferencias: Transferencia[]): Transferencia[] {
+    const agg: Record<string, number> = {};
+    const processed = new Set<string>();
+
+    for (const t of transferencias || []) {
+      const key = `${t.devedor}|${t.credor}`;
+      agg[key] = (agg[key] || 0) + (t.valor || 0);
+    }
+
+    const rem: Transferencia[] = [];
+
+    for (const key of Object.keys(agg)) {
+      if (processed.has(key)) continue;
+      const [a, b] = key.split('|');
+      const kAB = `${a}|${b}`;
+      const kBA = `${b}|${a}`;
+      const vAB = agg[kAB] || 0;
+      const vBA = agg[kBA] || 0;
+      const abatValue = Math.min(vAB, vBA);
+
+      const remAB = Math.max(0, vAB - abatValue);
+      const remBA = Math.max(0, vBA - abatValue);
+      if (remAB > 0) rem.push({ devedor: a, credor: b, valor: this.round2(remAB) });
+      if (remBA > 0) rem.push({ devedor: b, credor: a, valor: this.round2(remBA) });
+
+      processed.add(kAB);
+      processed.add(kBA);
+    }
+
+    rem.sort((x, y) => x.devedor.localeCompare(y.devedor) || y.valor - x.valor);
+    return rem;
   }
 }

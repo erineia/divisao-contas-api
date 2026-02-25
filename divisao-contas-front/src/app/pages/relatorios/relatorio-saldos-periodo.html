@@ -98,7 +98,7 @@
             </div>
             <div class="resumo-card">
               <div class="label">Total do período</div>
-              <div class="value">{{ totalPeriodo | currency: 'BRL' }}</div>
+              <div class="value">{{ toPtMoney(totalPeriodo) }}</div>
             </div>
             <div class="resumo-card">
               <div class="label">Lançamentos</div>
@@ -106,36 +106,46 @@
             </div>
           </div>
 
-          <!-- Saldos por pessoa -->
           <div class="secao">
-            <h3>Saldos por pessoa</h3>
-            <div class="lista-saldos">
-              <div class="saldo-row" *ngFor="let s of saldosDisplay">
-                <div class="nome">{{ s.nome }}</div>
-                <div class="valor" [class.positivo]="s.valor > 0" [class.negativo]="s.valor < 0">
-                  {{ s.valor | currency: 'BRL' }}
+            <div class="duas-colunas">
+              <div class="coluna-saldos">
+                <h3>Saldos por pessoa</h3>
+                <div class="lista-saldos">
+                  <div class="saldo-row" *ngFor="let s of saldosDisplay">
+                    <div class="nome">{{ s.nome }}</div>
+                    <div class="valor" [class.positivo]="s.valor > 0" [class.negativo]="s.valor < 0">
+                      {{ toPtMoney(s.valor) }}
+                    </div>
+                    <div class="tag" *ngIf="s.valor > 0">Recebe</div>
+                    <div class="tag" *ngIf="s.valor < 0">Deve</div>
+                    <div class="tag" *ngIf="s.valor === 0">Quitado</div>
+                  </div>
                 </div>
-                <div class="tag" *ngIf="s.valor > 0">Recebe</div>
-                <div class="tag" *ngIf="s.valor < 0">Deve</div>
-                <div class="tag" *ngIf="s.valor === 0">Quitado</div>
               </div>
-            </div>
-          </div>
 
-          <!-- Quem deve para quem -->
-          <div class="secao">
-            <h3>Quem deve para quem</h3>
-
-            <div class="sem-registros" *ngIf="transferencias.length === 0">
-              Nenhuma transferência necessária (tudo quitado).
-            </div>
-
-            <div class="lista-transferencias" *ngIf="transferencias.length > 0">
-              <div class="transfer-row" *ngFor="let t of transferencias">
-                <div class="de">{{ t.devedor }}</div>
-                <div class="seta">→</div>
-                <div class="para">{{ t.credor }}</div>
-                <div class="valor">{{ t.valor | currency: 'BRL' }}</div>
+              <div class="coluna-transferencias">
+                <h3>Quem deve para quem (abatimentos)</h3>
+                <table class="tabela-transferencias" *ngIf="transferenciasAposAbatimento.length > 0">
+                  <thead>
+                    <tr>
+                      <th>Deve</th>
+                      <th></th>
+                      <th>Recebe</th>
+                      <th class="th-valor">Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let t of transferenciasAposAbatimento">
+                      <td class="td-devedor">{{ t.devedor }}</td>
+                      <td class="td-seta">→</td>
+                      <td class="td-credor">{{ t.credor }}</td>
+                      <td class="td-valor">{{ toPtMoney(t.valor) }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div class="sem-registros" *ngIf="transferenciasAposAbatimento.length === 0">
+                  Nenhuma transferência necessária (tudo quitado).
+                </div>
               </div>
             </div>
           </div>

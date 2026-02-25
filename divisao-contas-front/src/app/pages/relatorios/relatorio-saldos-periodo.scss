@@ -40,6 +40,35 @@
   overflow: hidden;
 }
 
+/* Layout duas colunas: saldos (esquerda) + transferencias (direita) */
+.duas-colunas {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 18px;
+  align-items: start;
+}
+.coluna-saldos { min-width: 0; }
+.coluna-transferencias { min-width: 0; }
+
+.tabela-transferencias {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+}
+.tabela-transferencias thead th {
+  text-align: left;
+  padding: 8px 12px;
+  opacity: 0.9;
+  font-weight: 700;
+}
+.tabela-transferencias tbody td {
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255,255,255,.04);
+}
+.tabela-transferencias .td-seta { width: 32px; text-align: center; opacity: .9 }
+.tabela-transferencias .td-valor { text-align: right; font-weight: 700; min-width: 120px }
+.sem-registros { padding: 12px; opacity: .85 }
+
 .saldo-row, .transfer-row {
   display: grid;
   grid-template-columns: 1fr auto auto;
@@ -88,4 +117,6 @@
   .resumo-cards {
     grid-template-columns: 1fr;
   }
+
+  .duas-colunas { grid-template-columns: 1fr; }
 }
